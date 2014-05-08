@@ -1,0 +1,46 @@
+<rerunConfig>
+	<jenkinsConfig>
+		<jenkinsURL>http://eashdpdesk161.aaa.ad.ea.com:8080</jenkinsURL>
+		<jenkinsFolder>D:\Jenkins\.jenkins</jenkinsFolder>
+		<views>
+			<listView>
+				<name>BVT</name>
+			</listView>
+			<listView>
+				<name>Comprehensive</name>
+			</listView>
+		</views>
+	</jenkinsConfig>
+	<report>
+		<ReportTemplatePath>C:\Users\jinhuang\Desktop\ResultAnalyzer\reportTemplate.xml
+		</ReportTemplatePath>
+		<ReportOutPutPath>C:\Users\jinhuang\Desktop\ResultAnalyzer\Result.html
+		</ReportOutPutPath>
+	</report>
+
+	<log>
+		<keepLog>
+			<!-- KEEPALL KEEPNONE KEEPSUCCESS KEEPFAILURE -->
+			
+		</keepLog>
+		<daysToKeep>50</daysToKeep>
+		<path>C:\Users\jinhuang\Desktop\ResultAnalyzer\rerunLog</path>
+	</log>
+
+	<mail>
+		<SMTPHost>mailhost.ea.com</SMTPHost>
+		<Enable>false</Enable>
+	
+		<Subject>BVT report for REL</Subject>
+		<From>EADPAutoEx@ea.com</From>
+		<ToList>
+			<String>jinhuang@ea.com</String>
+		</ToList>
+		<CCList>
+			<String>EADPAutoEx@ea.com</String>
+		</CCList>
+	</mail>
+
+
+
+</rerunConfig>

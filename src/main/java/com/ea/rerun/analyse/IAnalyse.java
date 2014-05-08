@@ -6,5 +6,4 @@ package com.ea.rerun.analyse;
  * @Date May 7, 2014
  */
 public interface IAnalyse {
-
 }
