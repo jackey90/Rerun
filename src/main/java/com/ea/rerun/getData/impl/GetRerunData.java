@@ -2,7 +2,7 @@ package com.ea.rerun.getData.impl;
 
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.model.JenkinsTestResult;
-import com.ea.rerun.getData.model.RerunConfig;
+import com.ea.rerun.getData.model.config.RerunConfig;
 
 /**
  * @author Jackey jaceky90.hj@gmail.com
@@ -13,13 +13,15 @@ import com.ea.rerun.getData.model.RerunConfig;
 public class GetRerunData implements IGetData{
 	private RerunConfig config;
 
-	public GetRerunData(RerunConfig config) {
-		this.config = config;
-	}
 
 	public JenkinsTestResult getData() {
-		// TODO Auto-generated method stub
+		initConfig();
 		return null;
+	}
+	
+	
+	public void initConfig(){
+		config = RerunConfig.getInstance();
 	}
 
 }
