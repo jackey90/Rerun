@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.dom4j.Document;
 
-public class MailConfig extends AbstractConfig {
+import com.ea.rerun.util.XMLAnalyser;
+
+public class RerunMailConfig extends XMLAnalyser {
 
 	// singleton
-	private static MailConfig mailConfig;
+	private static RerunMailConfig mailConfig;
 	private final boolean enable;
 	private final String sTMPHost;
 	private final String subject;
@@ -15,7 +17,7 @@ public class MailConfig extends AbstractConfig {
 	private final List<String> toList;
 	private final List<String> ccList;
 
-	private MailConfig(Document doc) {
+	private RerunMailConfig(Document doc) {
 		super(doc);
 		enable = generateEnable();
 		sTMPHost = generateSTMPHost();
@@ -25,9 +27,9 @@ public class MailConfig extends AbstractConfig {
 		ccList = generateCCList();
 	}
 
-	public static MailConfig getInstance(Document doc) {
+	public static RerunMailConfig getInstance(Document doc) {
 		if (mailConfig == null) {
-			mailConfig = new MailConfig(doc);
+			mailConfig = new RerunMailConfig(doc);
 		}
 
 		return mailConfig;
@@ -35,7 +37,7 @@ public class MailConfig extends AbstractConfig {
 
 	private boolean generateEnable() {
 		String result = getNodeString("/rerunConfig/mail/Enable");
-		if (result == null) {
+		if (isNullOrEmpty(result)) {
 			return false;
 		}
 		return Boolean.parseBoolean(result.trim());

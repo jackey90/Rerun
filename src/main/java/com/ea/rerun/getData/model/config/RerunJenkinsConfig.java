@@ -12,32 +12,34 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-public class JenkinsConfig extends AbstractConfig {
+import com.ea.rerun.util.XMLAnalyser;
+
+public class RerunJenkinsConfig extends XMLAnalyser {
 	// singleton
-	private static JenkinsConfig jenkinsConfig;
+	private static RerunJenkinsConfig jenkinsConfig;
 
 	private final String url;
 	private final String jenkinsFolder;
 	private final Map<String, List<String>> views;
 
-	private JenkinsConfig(Document doc) {
+	private RerunJenkinsConfig(Document doc) {
 		super(doc);
 		url = generateUrl();
 		jenkinsFolder = generateJenkinsFolder();
 		views = generateViews();
 	}
 
-	public static JenkinsConfig getInstance(Document doc) {
+	public static RerunJenkinsConfig getInstance(Document doc) {
 		if (jenkinsConfig == null) {
-			jenkinsConfig = new JenkinsConfig(doc);
+			jenkinsConfig = new RerunJenkinsConfig(doc);
 		}
 		return jenkinsConfig;
 	}
 
 	@SuppressWarnings("unused")
 	private String generateUrl() {
-		String result = getNodeString("//rerunConfig/jenkinsConfig/jenkinsURL");
-		if (result == null) {
+		String result = getNodeString("//rerunConfig/jenkins/jenkinsURL");
+		if (isNullOrEmpty(result)) {
 			String address = null;
 			InetAddress addr;
 			try {
@@ -53,8 +55,8 @@ public class JenkinsConfig extends AbstractConfig {
 	}
 
 	private String generateJenkinsFolder() {
-		String result = getNodeString("//rerunConfig/jenkinsConfig/jenkinsFolder");
-		if (result == null) {
+		String result = getNodeString("//rerunConfig/jenkins/jenkinsFolder");
+		if (isNullOrEmpty(result)) {
 			result = "C:\\Program Files (x86)\\Jenkins";
 			if (new File(result).exists()) {
 				warning("jenkinsFolder not set, use default:" + result);
@@ -69,7 +71,7 @@ public class JenkinsConfig extends AbstractConfig {
 	private Map<String, List<String>> generateViews() {
 		if (doc != null) {
 			List<Node> viewNodeList = doc
-					.selectNodes("//rerunConfig/jenkinsConfig/views/listView");
+					.selectNodes("//rerunConfig/jenkins/views/listView");
 			if (viewNodeList != null && viewNodeList.size() > 0) {
 				Map<String, List<String>> result = new HashMap<String, List<String>>();
 

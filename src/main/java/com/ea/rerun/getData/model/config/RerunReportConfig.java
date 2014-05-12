@@ -4,36 +4,38 @@ import java.io.File;
 
 import org.dom4j.Document;
 
-public class ReportConfig extends AbstractConfig {
+import com.ea.rerun.util.XMLAnalyser;
+
+public class RerunReportConfig extends XMLAnalyser {
 
 	// singleton
-	private static ReportConfig reportConfig;
+	private static RerunReportConfig reportConfig;
 
 	private final String reportTemplatePath;
 	private final String reportOutPutPath;
 
-	private ReportConfig(Document doc) {
+	private RerunReportConfig(Document doc) {
 		super(doc);
 		reportTemplatePath = generateTemplatePath();
 		reportOutPutPath = generateOutPutPath();
 	}
 
-	public static ReportConfig getInstance(Document doc) {
+	public static RerunReportConfig getInstance(Document doc) {
 		if (reportConfig == null) {
-			reportConfig = new ReportConfig(doc);
+			reportConfig = new RerunReportConfig(doc);
 		}
 		return reportConfig;
 	}
 
 	private String generateTemplatePath() {
 		String result = getNodeString("/rerunConfig/report/ReportTemplatePath");
-		if (result == null) {
+		if (isNullOrEmpty(result)) {
 			warning("ReportTemplatePath not set, use default!");
 			result = RerunConfig.currentPath + "reportTemplate.xml";
+
 		}
 		if (!new File(result).exists()) {
-			error("reportTemplate.xml does not exist!");
-			return null;
+			result = "str\\main\\resources\\defaultReportTemplate.xml";
 		}
 
 		return result;
@@ -41,13 +43,9 @@ public class ReportConfig extends AbstractConfig {
 
 	private String generateOutPutPath() {
 		String result = getNodeString("/rerunConfig/report/ReportOutPutPath");
-		if (result == null) {
+		if (isNullOrEmpty(result)) {
 			warning("ReportOutPutPath not set, use default!");
 			result = RerunConfig.currentPath + "Result.html";
-		}
-		if (!new File(result).exists()) {
-			error("Result.html does not exist!");
-			return null;
 		}
 		return result;
 	}

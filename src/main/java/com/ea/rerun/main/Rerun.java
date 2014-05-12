@@ -4,8 +4,8 @@ import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetRerunData;
-import com.ea.rerun.getData.model.JenkinsTestResult;
 import com.ea.rerun.getData.model.config.RerunConfig;
+import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
 
 public class Rerun {
 	private IGetData getRerunData;

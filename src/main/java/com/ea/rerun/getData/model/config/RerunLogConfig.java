@@ -2,33 +2,35 @@ package com.ea.rerun.getData.model.config;
 
 import org.dom4j.Document;
 
-public class LogConfig extends AbstractConfig {
+import com.ea.rerun.util.XMLAnalyser;
+
+public class RerunLogConfig extends XMLAnalyser {
 
 	// singleton
-	private static LogConfig logConfig;
+	private static RerunLogConfig logConfig;
 
 	private final KeepLogEnum keepLogEnum;
 	private final int daysToKeep;
 	private final String logPath;
 
-	private LogConfig(Document doc) {
+	private RerunLogConfig(Document doc) {
 		super(doc);
 		keepLogEnum = generateKeepLogEnum();
 		daysToKeep = generateDaysToKeep();
 		logPath = generateLogPath();
 	}
 
-	public static LogConfig getInstance(Document doc) {
+	public static RerunLogConfig getInstance(Document doc) {
 		if (logConfig == null) {
-			logConfig = new LogConfig(doc);
+			logConfig = new RerunLogConfig(doc);
 		}
 		return logConfig;
 	}
 
 	private KeepLogEnum generateKeepLogEnum() {
 		String result = getNodeString("/rerunConfig/log/keepLog");
-		if (result == null) {
-			warning("keepLog not set, use default" + KeepLogEnum.KeepFailure);
+		if (isNullOrEmpty(result)) {
+			warning("keepLog not set, use default: " + KeepLogEnum.KeepFailure);
 			return KeepLogEnum.KeepFailure;
 		}
 		return KeepLogEnum.valueOf(result);
@@ -36,7 +38,7 @@ public class LogConfig extends AbstractConfig {
 
 	private int generateDaysToKeep() {
 		String result = getNodeString("/rerunConfig/log/daysToKeepLog");
-		if (result == null) {
+		if (isNullOrEmpty(result)) {
 			warning("daysToKeepLog not set, use default : 50 days");
 			return 50;
 		}
@@ -45,9 +47,9 @@ public class LogConfig extends AbstractConfig {
 
 	private String generateLogPath() {
 		String result = getNodeString("/rerunConfig/log/logPath");
-		if (result == null) {
+		if (isNullOrEmpty(result)) {
 			result = RerunConfig.currentPath + "\\rerunLog";
-			warning("logPath not set, use default : " + result);
+			warning("logPath not set, use default :  " + result);
 		}
 		return null;
 	}

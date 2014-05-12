@@ -4,6 +4,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
+import com.ea.rerun.util.PrintUtil;
+
 /**
  * @author Jackey jaceky90.hj@gmail.com
  * @Date May 7, 2014
@@ -18,27 +20,43 @@ public class RerunConfig {
 	private final String configPath;
 	private static Document doc;
 
-	private final JenkinsConfig jenkinsConfig;
-	private final ReportConfig reportConfig;
-	private final LogConfig logConfig;
-	private final MailConfig mailConfig;
+	private final RerunJenkinsConfig jenkinsConfig;
+	private final RerunReportConfig reportConfig;
+	private final RerunLogConfig logConfig;
+	private final RerunMailConfig mailConfig;
+	
+	public RerunJenkinsConfig getJenkinsConfig() {
+		return jenkinsConfig;
+	}
+
+	public RerunReportConfig getReportConfig() {
+		return reportConfig;
+	}
+
+	public RerunLogConfig getLogConfig() {
+		return logConfig;
+	}
+
+	public RerunMailConfig getMailConfig() {
+		return mailConfig;
+	}
 
 	private RerunConfig() {
 		configPath = currentPath + "\\rerunConfig.xml";
 		doc = getDocument();
-		jenkinsConfig = JenkinsConfig.getInstance(doc);
-		reportConfig = ReportConfig.getInstance(doc);
-		logConfig = LogConfig.getInstance(doc);
-		mailConfig = MailConfig.getInstance(doc);
+		jenkinsConfig = RerunJenkinsConfig.getInstance(doc);
+		reportConfig = RerunReportConfig.getInstance(doc);
+		logConfig = RerunLogConfig.getInstance(doc);
+		mailConfig = RerunMailConfig.getInstance(doc);
 	}
 
 	private RerunConfig(String path) {
 		this.configPath = path;
 		doc = getDocument();
-		jenkinsConfig = JenkinsConfig.getInstance(doc);
-		reportConfig = ReportConfig.getInstance(doc);
-		logConfig = LogConfig.getInstance(doc);
-		mailConfig = MailConfig.getInstance(doc);
+		jenkinsConfig = RerunJenkinsConfig.getInstance(doc);
+		reportConfig = RerunReportConfig.getInstance(doc);
+		logConfig = RerunLogConfig.getInstance(doc);
+		mailConfig = RerunMailConfig.getInstance(doc);
 	}
 
 	public static RerunConfig getInstance() {
@@ -62,17 +80,18 @@ public class RerunConfig {
 				return reader.read(configPath);
 			} catch (DocumentException e) {
 				try {
-					System.out.println("Warning:  rerunConfig.xml is not found, use default!");
-					return reader.read("defaultRerunConfig.xml");
+					PrintUtil.warning("rerunConfig.xml is not found, use default!");
+					return reader
+							.read("src\\main\\resources\\defaultRerunConfig.xml");
 				} catch (DocumentException e1) {
 					e1.printStackTrace();
 				}
 			}
 		} else {
-			System.out
-					.println("Warning:  rerunConfig.xml is not found, use default! ");
+			PrintUtil.warning("rerunConfig.xml is not found, use default!");
 			try {
-				return reader.read("defaultRerunConfig.xml");
+				return reader
+						.read("src\\main\\resources\\defaultRerunConfig.xml");
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}
