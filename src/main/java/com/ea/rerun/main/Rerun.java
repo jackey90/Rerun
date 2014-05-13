@@ -15,6 +15,7 @@ public class Rerun {
 	
 	public Rerun(){
 		getRerunData = new GetRerunData();
+		
 	}
 	
 	public void setAnalyseData(IAnalyse analyseData) {
@@ -28,7 +29,8 @@ public class Rerun {
 	
 	public static void main(String[] args) {
 		Rerun r = new Rerun();
-		r.getJenkinsTestResult();
+		JenkinsTestResult result = r.getJenkinsTestResult();
+		System.out.println();
 	}
 	
 

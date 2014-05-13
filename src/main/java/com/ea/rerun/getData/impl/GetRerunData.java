@@ -115,9 +115,11 @@ public class GetRerunData implements IGetData {
 					if (rootPom != null && goals != null) {
 						JenkinsJob jenkinsJob = new JenkinsJob();
 						String[] tempArray = rootPom.split("\\\\");
-						for (String temp : tempArray) {
+						for (int i = 0; i < tempArray.length; i++) {
+							String temp = tempArray[i];
 							if (temp.startsWith("$")) {
-								temp = jenkinsConfig.getGlobalNodeProperties()
+								tempArray[i] = jenkinsConfig
+										.getGlobalNodeProperties()
 										.get(temp.substring(1, temp.length()));
 							}
 						}
@@ -130,6 +132,8 @@ public class GetRerunData implements IGetData {
 						jenkinsJob.setJobName(jobName);
 						jenkinsJob.setPomPath(realPom);
 						jenkinsJob.setModules(getFaildJenkinsModules(jobPath));
+
+						return jenkinsJob;
 					}
 				}
 			}
@@ -168,6 +172,8 @@ public class GetRerunData implements IGetData {
 			module.setModuleName(moduleFile.getName());
 			module.setLastBuildResult(getLastFailedJenkinsJunitResult(
 					modulePath, module.getNextBuildNumber()));
+
+			return module;
 		}
 		return null;
 	}
@@ -204,13 +210,13 @@ public class GetRerunData implements IGetData {
 			String totalCount = buildXml
 					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/totalCount");
 
-			if (StringUtil.isNullOrEmpty(failCountStr)) {
+			if (!StringUtil.isNullOrEmpty(failCountStr)) {
 				unitResult.setFailCount(Integer.parseInt(failCountStr.trim()));
 			}
-			if (StringUtil.isNullOrEmpty(skipCount)) {
+			if (!StringUtil.isNullOrEmpty(skipCount)) {
 				unitResult.setSkipCount(Integer.parseInt(skipCount.trim()));
 			}
-			if (StringUtil.isNullOrEmpty(totalCount)) {
+			if (!StringUtil.isNullOrEmpty(totalCount)) {
 				unitResult.setTotalCount(Integer.parseInt(totalCount.trim()));
 			}
 			unitResult.setBuildNumber(lastBuildFolderNumber);
@@ -248,7 +254,7 @@ public class GetRerunData implements IGetData {
 					suite.setSuiteDuration(new BigDecimal(juniteAnalyser
 							.getNodeString("//result/suites/suite/duration")
 							.trim()));
-					List<Node> caseNodes = suiteNode.selectNodes("/cases/case");
+					List<Node> caseNodes = suiteNode.selectNodes("cases/case");
 					if (caseNodes != null) {
 						List<JenkinsJunitResultCase> cases = new ArrayList<JenkinsJunitResultCase>();
 						for (Node caseNode : caseNodes) {
@@ -280,9 +286,9 @@ public class GetRerunData implements IGetData {
 									.selectSingleNode("className").getText()
 									.trim();
 							jCase.setPackageName(classNameStr.substring(0,
-									classNameStr.lastIndexOf("\\.")));
+									classNameStr.lastIndexOf(".")));
 							jCase.setClassName(classNameStr.substring(
-									classNameStr.lastIndexOf("\\."),
+									classNameStr.lastIndexOf(".") + 1,
 									classNameStr.length()));
 							jCase.setTestName(caseNode
 									.selectSingleNode("testName").getText()
