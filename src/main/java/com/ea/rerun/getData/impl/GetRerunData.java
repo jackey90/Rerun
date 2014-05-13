@@ -6,21 +6,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
+import org.dom4j.Node;
 
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.model.config.JenkinsRootConfig;
 import com.ea.rerun.getData.model.config.RerunConfig;
 import com.ea.rerun.getData.model.orgData.JenkinsJob;
 import com.ea.rerun.getData.model.orgData.JenkinsJunitResult;
+import com.ea.rerun.getData.model.orgData.JenkinsJunitResultCase;
+import com.ea.rerun.getData.model.orgData.JenkinsJunitResultSuite;
 import com.ea.rerun.getData.model.orgData.JenkinsModule;
+import com.ea.rerun.getData.model.orgData.JenkinsTestCaseStatusEnum;
 import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
 import com.ea.rerun.util.FileAnalyser;
 import com.ea.rerun.util.PrintUtil;
 import com.ea.rerun.util.StringUtil;
 import com.ea.rerun.util.XMLAnalyser;
+import com.ibm.icu.math.BigDecimal;
 
 /**
  * @author Jackey jaceky90.hj@gmail.com
@@ -49,6 +51,7 @@ public class GetRerunData implements IGetData {
 		if (rerunConfig != null && jenkinsConfig != null) {
 			JenkinsTestResult result = new JenkinsTestResult();
 			result.setViews(getFailedJenkinsTestViews());
+			return result;
 		}
 
 		return null;
@@ -169,24 +172,30 @@ public class GetRerunData implements IGetData {
 		return null;
 	}
 
-	public JenkinsJunitResult getLastFailedJenkinsJunitResult(
-			String modulePath, int nextNumber) {
-		File lastBuildFolder = null;
+	public int getLastJenkinsBuildFolderNumber(String modulePath, int nextNumber) {
 		String filePath = null;
 		nextNumber--;
 		int i = nextNumber;
 		for (; i >= 1; i--) {
-			filePath = modulePath + "\\builds\\" + nextNumber;
+			filePath = modulePath + "\\builds\\" + i;
 			if (new File(filePath).exists() && new File(filePath).isDirectory()) {
-				lastBuildFolder = new File(filePath);
 				break;
 			}
 		}
 
-		if (lastBuildFolder != null) {
+		return i;
+	}
+
+	public JenkinsJunitResult getLastFailedJenkinsJunitResult(
+			String modulePath, int nextNumber) {
+		int lastBuildFolderNumber = getLastJenkinsBuildFolderNumber(modulePath,
+				nextNumber);
+		String lastBuildFolderPath = modulePath + "\\builds\\"
+				+ lastBuildFolderNumber;
+		if (lastBuildFolderPath != null) {
 			JenkinsJunitResult unitResult = new JenkinsJunitResult();
-			
-			XMLAnalyser buildXml = new XMLAnalyser(new File(filePath
+
+			XMLAnalyser buildXml = new XMLAnalyser(new File(lastBuildFolderPath
 					+ "\\build.xml"));
 			String failCountStr = buildXml
 					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/failCount");
@@ -194,21 +203,98 @@ public class GetRerunData implements IGetData {
 					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/skipCount");
 			String totalCount = buildXml
 					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/totalCount");
-			
-			if(StringUtil.isNullOrEmpty(failCountStr)){
+
+			if (StringUtil.isNullOrEmpty(failCountStr)) {
 				unitResult.setFailCount(Integer.parseInt(failCountStr.trim()));
 			}
-			if(StringUtil.isNullOrEmpty(skipCount)){
+			if (StringUtil.isNullOrEmpty(skipCount)) {
 				unitResult.setSkipCount(Integer.parseInt(skipCount.trim()));
 			}
-			if(StringUtil.isNullOrEmpty(totalCount)){
+			if (StringUtil.isNullOrEmpty(totalCount)) {
 				unitResult.setTotalCount(Integer.parseInt(totalCount.trim()));
 			}
-			unitResult.setBuildNumber(i);
-			
-			
-			XMLAnalyser juniteAnalyer = new XMLAnalyser(new File(filePath+"\\junitResult.xml"));
-			
+			unitResult.setBuildNumber(lastBuildFolderNumber);
+
+			XMLAnalyser juniteAnalyer = new XMLAnalyser(new File(
+					lastBuildFolderPath + "\\junitResult.xml"));
+			String durationStr = juniteAnalyer
+					.getNodeString("//result/duration");
+			unitResult.setTotalDuration(new BigDecimal(durationStr.trim()));
+			String keepLongStdioStr = juniteAnalyer
+					.getNodeString("//result/keepLongStdio");
+			unitResult.setKeepLongStdio(Boolean.parseBoolean(keepLongStdioStr
+					.trim()));
+			unitResult.setSuites(getLastFailedSuites(juniteAnalyer));
+
+			return unitResult;
+		}
+
+		return null;
+	}
+
+	public List<JenkinsJunitResultSuite> getLastFailedSuites(
+			XMLAnalyser juniteAnalyser) {
+		if (juniteAnalyser != null) {
+			List<Node> suiteList = juniteAnalyser
+					.getNodeList("//result/suites/suite");
+			if (suiteList != null && suiteList.size() > 0) {
+				List<JenkinsJunitResultSuite> list = new ArrayList<JenkinsJunitResultSuite>();
+				for (Node suiteNode : suiteList) {
+					JenkinsJunitResultSuite suite = new JenkinsJunitResultSuite();
+					suite.setFile(juniteAnalyser
+							.getNodeString("//result/suites/suite/file"));
+					suite.setSuiteName(juniteAnalyser
+							.getNodeString("//result/suites/suite/name"));
+					suite.setSuiteDuration(new BigDecimal(juniteAnalyser
+							.getNodeString("//result/suites/suite/duration")
+							.trim()));
+					List<Node> caseNodes = suiteNode.selectNodes("/cases/case");
+					if (caseNodes != null) {
+						List<JenkinsJunitResultCase> cases = new ArrayList<JenkinsJunitResultCase>();
+						for (Node caseNode : caseNodes) {
+							if (caseNode.selectSingleNode("skipped").getText()
+									.equals("false")
+									&& caseNode
+											.selectSingleNode("errorDetails") == null) {
+								continue;
+							}
+							JenkinsJunitResultCase jCase = new JenkinsJunitResultCase();
+							String skippedStr = caseNode
+									.selectSingleNode("skipped").getText()
+									.trim();
+							if (skippedStr.equals("false")) {
+								jCase.setCaseStatus(JenkinsTestCaseStatusEnum.Failed);
+								jCase.setErrorDetails(caseNode
+										.selectSingleNode("errorDetails")
+										.getText().trim());
+								jCase.setErrorStackTrace(caseNode
+										.selectSingleNode("errorStackTrace")
+										.getText().trim());
+								jCase.setStdout(caseNode
+										.selectSingleNode("stdout").getText()
+										.trim());
+							} else {
+								jCase.setCaseStatus(JenkinsTestCaseStatusEnum.Skipped);
+							}
+							String classNameStr = caseNode
+									.selectSingleNode("className").getText()
+									.trim();
+							jCase.setPackageName(classNameStr.substring(0,
+									classNameStr.lastIndexOf("\\.")));
+							jCase.setClassName(classNameStr.substring(
+									classNameStr.lastIndexOf("\\."),
+									classNameStr.length()));
+							jCase.setTestName(caseNode
+									.selectSingleNode("testName").getText()
+									.trim());
+							cases.add(jCase);
+						}
+
+						suite.setCases(cases);
+					}
+				}
+				return list;
+			}
 		}
 
 		return null;

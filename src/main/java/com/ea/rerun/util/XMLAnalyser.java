@@ -24,6 +24,14 @@ public class XMLAnalyser {
 		doc = getDocument(file);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Node> getNodeList(String nodePath) {
+		if (doc != null) {
+			return doc.selectNodes(nodePath);
+		}
+		return null;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public List<String> getNodeStringList(String nodePath) {
 		if (doc != null) {
