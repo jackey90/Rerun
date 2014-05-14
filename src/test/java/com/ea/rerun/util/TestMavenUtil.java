@@ -9,8 +9,9 @@ import org.junit.Test;
 public class TestMavenUtil {
 	@Test
 	public void testRun() {
+		String str = "mvn -B -F D:\\ea\\nucleus\\MAIN\\commerce-integration\\pom.xml -U clean test -P Comprehensive -Dtest.universe=onebox -Dtest=com.ea.fusion.commerce.cart.checkout.TestCartCheckoutCreditCard#testCreditCardPackageGoodsReturnPartialReturnCartCheckout";
 		MavenUtil
-				.run(" mvn -B -f D:\\Users\\jinhuang\\EASAP\\nucleus\\NNG\\rating-integration\\pom.xml -U clean test -P BVT -Dtest.universe=onebox -Dtest=com.ea.eadp.rating.integration.testcase.cartRating.TestShippingRating#testScenario_shippingPromotionNotInEffectiveDate");
+				.run(str);
 		
 	}
 

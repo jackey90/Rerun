@@ -27,7 +27,8 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 		this.jenkinsResult = jenkinsResult;
 	}
 
-	public List<MavenCommand> jenkinsResult2MvnCmd() {
+	@Override
+	public List<MavenCommand> getAnalyseData() {
 		if (jenkinsResult != null) {
 			List<MavenCommand> list = new ArrayList<MavenCommand>();
 			for (Map.Entry<String, List<JenkinsJob>> views : jenkinsResult
@@ -60,10 +61,8 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 										command.setTestName(jenkinsCase
 												.getTestName());
 										command.setGoals(goals);
-										command.setCommand("mvn -B -F "
-												+ pomPath
-												+ " "
-												+ goals
+										command.setCommand("mvn -B -f "
+												+ pomPath + " " + goals
 												+ " -Dtest="
 												+ jenkinsCase.getPackageName()
 												+ "."
@@ -78,9 +77,10 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 					}
 				}
 			}
-			
+
 			return list;
 		}
 		return null;
 	}
+
 }

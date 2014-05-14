@@ -40,7 +40,7 @@ public class MavenUtil {
 			//pb.redirectErrorStream();
 			Process p = pb.start();
 			InputStreamConsumer isc = new InputStreamConsumer(
-					p.getErrorStream());
+					p.getInputStream());
 			isc.start();
 			int exitCode = p.waitFor();
 			isc.join();
