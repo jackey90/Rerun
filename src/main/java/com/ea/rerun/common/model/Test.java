@@ -1,5 +1,7 @@
 package com.ea.rerun.common.model;
 
+import com.ea.rerun.analyse.model.MavenRerunTestCase;
+
 public interface Test {
 	/**
 	 * Counts the number of test cases that will be run by this test.

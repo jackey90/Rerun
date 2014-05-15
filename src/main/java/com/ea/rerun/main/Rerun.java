@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
-import com.ea.rerun.analyse.model.MavenCommand;
+import com.ea.rerun.analyse.model.MavenRerunTestCase;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
@@ -35,12 +35,10 @@ public class Rerun {
 		Rerun r = new Rerun();
 		JenkinsTestResult result = r.getJenkinsTestResult();
 		AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(result);
-		List<MavenCommand> list = an.getAnalyseData();
+		List<MavenRerunTestCase> list = an.getAnalyseData();
 		List<String> strList = new ArrayList<String>();
 		int i = 1;
-		for (MavenCommand cmd : list) {
-			System.out.println(i++ + "   " + cmd.getCommand());
-			strList.add(cmd.getCommand());
+		for (MavenRerunTestCase cmd : list) {
 			// MavenUtil.run(cmd.getCommand());
 		}
 		// MavenUtil.run(strList);

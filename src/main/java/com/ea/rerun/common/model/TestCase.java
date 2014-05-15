@@ -6,15 +6,22 @@ public class TestCase implements Test {
 	private String pack;
 	private String className;
 	private String testName;
+	private String goals;
+	private String pomPath;
+
+	private TestResult result;
 
 	public TestResult run() {
-		TestResult result = createResult();
+		result = getResult();
 		run(result);
 		return result;
 	}
 
-	protected TestResult createResult() {
-		return new TestResult();
+	private TestResult getResult() {
+		if (result == null) {
+			result = new TestResult();
+		}
+		return result;
 	}
 
 	public String getBranch() {
@@ -60,6 +67,27 @@ public class TestCase implements Test {
 	public String toString() {
 		return branch + ":" + bundle + ":" + pack + "." + className + "."
 				+ testName;
+	}
+
+	public String getGoals() {
+		return goals;
+	}
+
+	public void setGoals(String goals) {
+		this.goals = goals;
+	}
+
+	public String getPomPath() {
+		return pomPath;
+	}
+
+	public void setPomPath(String pomPath) {
+		this.pomPath = pomPath;
+	}
+
+	public String getMavenCommand() {
+		return "mvn -B -f " + pomPath + " " + goals + " -Dtest=" + pack + "."
+				+ className + "#" + testName;
 	}
 
 	@Override

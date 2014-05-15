@@ -1,8 +1,8 @@
 package com.ea.rerun.analyse.impl;
 
 import com.ea.rerun.analyse.IAnalyse;
-import com.ea.rerun.analyse.model.MavenCommand;
 import com.ea.rerun.analyse.model.MavenRerunResultCase;
+import com.ea.rerun.analyse.model.MavenRerunTestCase;
 import com.ea.rerun.common.model.TestCase;
 
 public class AnalyseMavenTestResult implements IAnalyse{
@@ -14,9 +14,9 @@ public class AnalyseMavenTestResult implements IAnalyse{
 		return null;
 	}
 	
-	public MavenRerunResultCase getOneResult(MavenCommand command){
-		TestCase testCase = command.getTestCase();
-		junit.framework.TestCase = cae
+	public MavenRerunResultCase getOneResult(MavenRerunTestCase mavenRerunTestCase){
+		TestCase testCase = mavenRerunTestCase.getTestCase();
+		testCase.run();
 		
 		return null;
 	}

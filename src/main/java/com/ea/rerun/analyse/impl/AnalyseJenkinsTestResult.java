@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ea.rerun.analyse.IAnalyse;
-import com.ea.rerun.analyse.model.MavenCommand;
+import com.ea.rerun.analyse.model.MavenRerunTestCase;
 import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.getData.model.orgData.JenkinsJob;
 import com.ea.rerun.getData.model.orgData.JenkinsJunitResult;
@@ -29,9 +29,9 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 	}
 
 	@Override
-	public List<MavenCommand> getAnalyseData() {
+	public List<MavenRerunTestCase> getAnalyseData() {
 		if (jenkinsResult != null) {
-			List<MavenCommand> list = new ArrayList<MavenCommand>();
+			List<MavenRerunTestCase> list = new ArrayList<MavenRerunTestCase>();
 			for (Map.Entry<String, List<JenkinsJob>> views : jenkinsResult
 					.getViews().entrySet()) {
 				String viewName = views.getKey();
@@ -51,7 +51,7 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 										.getSuites()) {
 									for (JenkinsJunitResultCase jenkinsCase : jenkinsSuite
 											.getCases()) {
-										MavenCommand command = new MavenCommand();
+										MavenRerunTestCase command = new MavenRerunTestCase();
 										command.setViewName(viewName);
 										command.setJobName(jobName);
 										TestCase testCase = new TestCase();
@@ -77,16 +77,6 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 												.getClassName());
 										testCase.setTestName(jenkinsCase
 												.getTestName());
-										command.setGoals(goals);
-										command.setPomPath(pomPath);
-										command.setCommand("mvn -B -f "
-												+ pomPath + " " + goals
-												+ " -Dtest="
-												+ jenkinsCase.getPackageName()
-												+ "."
-												+ jenkinsCase.getClassName()
-												+ "#"
-												+ jenkinsCase.getTestName());
 										list.add(command);
 									}
 								}
