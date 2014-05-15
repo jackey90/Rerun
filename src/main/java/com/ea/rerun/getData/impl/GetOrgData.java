@@ -103,6 +103,9 @@ public class GetOrgData implements IGetData {
 	public JenkinsJob getFailedJenkinsJob(String jobName) {
 		String jobPath = jenKinsFolder + "\\jobs\\" + jobName;
 		if (jobName != null) {
+			if (jobName.equals("catalog-Comprehensive")) {
+				System.out.println();
+			}
 			File job = new File(jobPath);
 			if (job.exists() && job.isDirectory()) {
 				File jobConfig = new File(jobPath + "\\config.xml");
@@ -128,7 +131,7 @@ public class GetOrgData implements IGetData {
 							realPom += "\\" + tempArray[i];
 						}
 						realPom = realPom.replaceAll("\\\\", "\\\\\\\\");
-						
+
 						jenkinsJob.setGoals(goals);
 						jenkinsJob.setJobName(jobName);
 						jenkinsJob.setPomPath(realPom);
@@ -262,7 +265,7 @@ public class GetOrgData implements IGetData {
 							if (caseNode.selectSingleNode("skipped").getText()
 									.equals("false")
 									&& caseNode
-											.selectSingleNode("errorDetails") == null) {
+											.selectSingleNode("errorStackTrace") == null) {
 								continue;
 							}
 							JenkinsJunitResultCase jCase = new JenkinsJunitResultCase();
@@ -271,15 +274,20 @@ public class GetOrgData implements IGetData {
 									.trim();
 							if (skippedStr.equals("false")) {
 								jCase.setCaseStatus(JenkinsTestCaseStatusEnum.Failed);
-								jCase.setErrorDetails(caseNode
-										.selectSingleNode("errorDetails")
-										.getText().trim());
-								jCase.setErrorStackTrace(caseNode
-										.selectSingleNode("errorStackTrace")
-										.getText().trim());
-								if (caseNode.selectSingleNode("stdout") != null) {
+								Node erroDetailNode = caseNode
+										.selectSingleNode("errorDetails");
+								if (erroDetailNode != null) {
+									erroDetailNode.getText().trim();
+								}
+								if (caseNode
+										.selectSingleNode("errorStackTrace") != null) {
+									jCase.setErrorStackTrace(caseNode
+											.selectSingleNode("errorStackTrace")
+											.getText().trim());
+								}
+								if (caseNode.selectSingleNode("stderr") != null) {
 									jCase.setStdout(caseNode
-											.selectSingleNode("stdout")
+											.selectSingleNode("stderr")
 											.getText().trim());
 								}
 
@@ -310,5 +318,4 @@ public class GetOrgData implements IGetData {
 
 		return null;
 	}
-
 }

@@ -8,9 +8,6 @@
 			</listView>
 			<listView>
 				<name>Comprehensive</name>
-				<jobNames>
-					<string>catalog-Comprehensive</string>
-				</jobNames>
 			</listView>
 		</views>
 	</jenkins>
