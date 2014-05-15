@@ -2,7 +2,6 @@ package com.ea.rerun.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.Test;
 

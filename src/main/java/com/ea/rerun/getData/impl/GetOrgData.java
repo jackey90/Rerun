@@ -271,15 +271,20 @@ public class GetOrgData implements IGetData {
 									.trim();
 							if (skippedStr.equals("false")) {
 								jCase.setCaseStatus(JenkinsTestCaseStatusEnum.Failed);
-								jCase.setErrorDetails(caseNode
-										.selectSingleNode("errorDetails")
-										.getText().trim());
-								jCase.setErrorStackTrace(caseNode
-										.selectSingleNode("errorStackTrace")
-										.getText().trim());
-								if (caseNode.selectSingleNode("stdout") != null) {
+								Node erroDetailNode = caseNode
+										.selectSingleNode("errorDetails");
+								if (erroDetailNode != null) {
+									erroDetailNode.getText().trim();
+								}
+								if (caseNode
+										.selectSingleNode("errorStackTrace") != null) {
+									jCase.setErrorStackTrace(caseNode
+											.selectSingleNode("errorStackTrace")
+											.getText().trim());
+								}
+								if (caseNode.selectSingleNode("stderr") != null) {
 									jCase.setStdout(caseNode
-											.selectSingleNode("stdout")
+											.selectSingleNode("stderr")
 											.getText().trim());
 								}
 

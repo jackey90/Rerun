@@ -10,7 +10,7 @@ import java.util.Map;
  *       the jenkins test result, stored under jenkins' builds folder, eg:
  *       Jenkins
  *       \.jenkins\jobs\billing-Comprehensive\modules\com.ea.nucleus$billing
- *       -integration\builds\36
+ *       -integration\builds\36\junitResult.xml
  */
 public class JenkinsTestResult {
 	private Map<String, List<JenkinsJob>> views;

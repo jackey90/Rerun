@@ -1,14 +1,14 @@
 package com.ea.rerun.analyse.model;
 
+import com.ea.rerun.common.model.TestCase;
+
 public class MavenCommand {
 	private String viewName;
 	private String jobName;
-	private String moduleName;
-	private String casePackage;
-	private String caseClass;
-	private String testName;
+	private TestCase testCase;
 	private String command;
 	private String goals;
+	private String pomPath;
 
 	public String getViewName() {
 		return viewName;
@@ -26,38 +26,12 @@ public class MavenCommand {
 		this.jobName = jobName;
 	}
 
-	public String getModuleName() {
-		return moduleName;
+	public TestCase getTestCase() {
+		return testCase;
 	}
 
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-
-	public String getCasePackage() {
-		return casePackage;
-	}
-
-	public void setCasePackage(String casePackage) {
-		this.casePackage = casePackage;
-	}
-
-	public String getCaseClass() {
-		return caseClass;
-	}
-
-	public void setCaseClass(String caseClass) {
-		this.caseClass = caseClass;
-	}
-
-	
-
-	public String getTestName() {
-		return testName;
-	}
-
-	public void setTestName(String testName) {
-		this.testName = testName;
+	public void setTestCase(TestCase testCase) {
+		this.testCase = testCase;
 	}
 
 	public String getCommand() {
@@ -74,6 +48,14 @@ public class MavenCommand {
 
 	public void setGoals(String goals) {
 		this.goals = goals;
+	}
+
+	public String getPomPath() {
+		return pomPath;
+	}
+
+	public void setPomPath(String pomPath) {
+		this.pomPath = pomPath;
 	}
 
 }

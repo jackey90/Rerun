@@ -16,8 +16,6 @@ public class JenkinsJunitResultCase {
 	private String errorStackTrace;
 	private String stdout;
 	
-	
-
 	public String getPackageName() {
 		return packageName;
 	}
