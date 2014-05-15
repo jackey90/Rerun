@@ -37,12 +37,13 @@ public class Rerun {
 		AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(result);
 		List<MavenCommand> list = an.getAnalyseData();
 		List<String> strList = new ArrayList<String>();
+		int i = 1;
 		for (MavenCommand cmd : list) {
-			System.out.println(cmd.getCommand());
+			System.out.println(i++ + "   " + cmd.getCommand());
 			strList.add(cmd.getCommand());
 			// MavenUtil.run(cmd.getCommand());
 		}
-		MavenUtil.run(strList);
+		// MavenUtil.run(strList);
 		System.out.println();
 	}
 
