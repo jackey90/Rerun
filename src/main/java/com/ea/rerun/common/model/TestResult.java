@@ -104,9 +104,9 @@ public class TestResult {
 
 	private void addFailure(Node caseNode, Test test) {
 		String durationTimeStr = caseNode.valueOf("@time");
-		Node childNode = (Node) caseNode.selectNodes(".//*").get(0);
+		Node childNode = (Node) caseNode.selectNodes("//*").get(0);
 		String errorDetails = childNode.valueOf("@type");
-		String errorStackTrace = childNode.getText().trim();
+		String errorStackTrace = childNode.getText();
 		TestFailure failure = new TestFailure(test, errorDetails,
 				errorStackTrace, null, runCount,
 				new BigDecimal(durationTimeStr));
