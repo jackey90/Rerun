@@ -40,9 +40,10 @@ public class Rerun {
 		int i = 1;
 		for (MavenRerunTestCase cmd : list) {
 			System.out.println(cmd.getTestCase().getMavenCommand());
+			cmd.getTestCase().run();
 		}
-		TestCase testCase = list.get(0).getTestCase();
-		testCase.run();
+//		TestCase testCase = list.get(0).getTestCase();
+//		testCase.run();
 		// MavenUtil.run(strList);
 		System.out.println();
 	}

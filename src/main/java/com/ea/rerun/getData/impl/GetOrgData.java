@@ -127,7 +127,7 @@ public class GetOrgData implements IGetData {
 						for (int i = 1; i < tempArray.length; i++) {
 							realPom += "\\" + tempArray[i];
 						}
-						realPom = realPom.replaceAll("\\\\", "\\\\\\\\");
+						//realPom = realPom.replaceAll("\\\\", "\\\\\\\\");
 						
 						jenkinsJob.setGoals(goals);
 						jenkinsJob.setJobName(jobName);

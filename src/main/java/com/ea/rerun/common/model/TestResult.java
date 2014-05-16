@@ -38,7 +38,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = 5; i >= 0; i++) {
+				for (int i = 0; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);
@@ -58,13 +58,13 @@ public class TestResult {
 	private void getResult(TestCase test) {
 		String pomPath = test.getPomPath();
 		if (pomPath != null) {
-			String pomDirectory = pomPath
-					.substring(0, pomPath.lastIndexOf("."));
+			String pomDirectory = pomPath.substring(0,
+					pomPath.lastIndexOf("\\"));
 			String juinitreportsPath = pomDirectory
 					+ "\\target\\surefire-reports\\junitreports";
 			File juniteReportDir = new File(juinitreportsPath);
 			String reportName = "TEST-" + test.getPack() + "."
-					+ test.getClassName() + "." + test.getTestName() + ".xml";
+					+ test.getClassName() + ".xml";
 			if (juniteReportDir.exists() && juniteReportDir.isDirectory()) {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
@@ -86,7 +86,7 @@ public class TestResult {
 					.getNodeList("//testsuite/testcase");
 			if (caseNodeList != null && caseNodeList.size() > 0) {
 				Node caseNode = caseNodeList.get(0);
-				List<Node> childNodes = caseNode.selectNodes("//*");
+				List<Node> childNodes = caseNode.selectNodes(".//*");
 				if (childNodes != null && childNodes.size() > 0) {
 					Node childNode = childNodes.get(0);
 					String caseType = childNode.getName();
