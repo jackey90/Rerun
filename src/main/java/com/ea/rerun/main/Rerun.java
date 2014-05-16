@@ -11,7 +11,6 @@ import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
 import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
-import com.ea.rerun.util.MavenUtil;
 
 public class Rerun {
 	private IGetData getRerunData;

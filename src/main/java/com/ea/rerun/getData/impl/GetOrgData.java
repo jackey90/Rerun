@@ -262,7 +262,7 @@ public class GetOrgData implements IGetData {
 							if (caseNode.selectSingleNode("skipped").getText()
 									.equals("false")
 									&& caseNode
-											.selectSingleNode("errorDetails") == null) {
+											.selectSingleNode("errorStackTrace") == null) {
 								continue;
 							}
 							JenkinsJunitResultCase jCase = new JenkinsJunitResultCase();

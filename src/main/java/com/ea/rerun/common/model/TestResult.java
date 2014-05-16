@@ -37,6 +37,15 @@ public class TestResult {
 		while (!shouldStop()) {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
+			try {
+				for (int i = 5; i >= 0; i++) {
+					System.out.println("*********************   " + i
+							+ " ***************************");
+					Thread.sleep(1000);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			startRunCommand(test);
 			getResult(test);
 		}
@@ -119,34 +128,44 @@ public class TestResult {
 		for (TestSuccess success : successes) {
 			if (success.getRunNumber() == runCount) {
 				shouldStop = true;
+				PrintUtil.info("Success !");
 				return shouldStop;
 			}
 		}
 
-		if (failures.size() > 2) {
-			TestFailure lastFailure = failures.get(failures.size() - 1);
-			if (lastFailure.getRunNumber() == runCount) {
-				TestFailure preFailure = failures.get(failures.size() - 2);
-				if (preFailure.getRunNumber() == runCount - 1) {
-					if (preFailure.getErrorDetails() == null
-							&& lastFailure.getErrorDetails() == null) {
-						if (preFailure.getErrorStackTrace().equals(
-								lastFailure.getErrorStackTrace())) {
-							shouldStop = true;
-						}
-					} else if (preFailure.getErrorDetails() != null
-							&& preFailure.getErrorDetails() != null) {
-						if (preFailure.getErrorDetails().equals(
-								preFailure.getErrorDetails())
-								&& preFailure.getErrorStackTrace().equals(
-										lastFailure.getErrorStackTrace())) {
-							shouldStop = true;
+		if (runCount <= 3) {
+
+			if (failures.size() >= 2) {
+				TestFailure lastFailure = failures.get(failures.size() - 1);
+				if (lastFailure.getRunNumber() == runCount) {
+					TestFailure preFailure = failures.get(failures.size() - 2);
+					if (preFailure.getRunNumber() == runCount - 1) {
+						if (preFailure.getErrorDetails() == null
+								&& lastFailure.getErrorDetails() == null) {
+							if (preFailure.getErrorStackTrace().equals(
+									lastFailure.getErrorStackTrace())) {
+								shouldStop = true;
+								PrintUtil.info("Stable failure!");
+							}
+						} else if (preFailure.getErrorDetails() != null
+								&& preFailure.getErrorDetails() != null) {
+							if (preFailure.getErrorDetails().equals(
+									preFailure.getErrorDetails())
+									&& preFailure.getErrorStackTrace().equals(
+											lastFailure.getErrorStackTrace())) {
+								shouldStop = true;
+								PrintUtil.info("Stable failure!");
+							}
 						}
 					}
 				}
 			}
-		} else if (failures.size() >= 3) {
+
+		}
+
+		if (runCount >= 4) {
 			shouldStop = true;
+			PrintUtil.info("Unstable failure");
 		}
 
 		return shouldStop;
