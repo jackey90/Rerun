@@ -6,6 +6,7 @@ import java.util.List;
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
+import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
@@ -39,8 +40,10 @@ public class Rerun {
 		List<String> strList = new ArrayList<String>();
 		int i = 1;
 		for (MavenRerunTestCase cmd : list) {
-			// MavenUtil.run(cmd.getCommand());
+			System.out.println(cmd.getTestCase().getMavenCommand());
 		}
+		TestCase testCase = list.get(0).getTestCase();
+		testCase.run();
 		// MavenUtil.run(strList);
 		System.out.println();
 	}

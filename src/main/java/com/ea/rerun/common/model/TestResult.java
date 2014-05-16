@@ -4,24 +4,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dom4j.Element;
 import org.dom4j.Node;
 
 import com.ea.rerun.util.MavenUtil;
 import com.ea.rerun.util.PrintUtil;
 import com.ea.rerun.util.XMLAnalyser;
+import com.ibm.icu.math.BigDecimal;
 
 public class TestResult {
 	private int runCount;
 	private List<TestFailure> failures;
-	private List<TestSuccess> success;
+	private List<TestSuccess> successes;
 	private List<TestSkip> skips;
 	private boolean shouldStop;
 
 	public TestResult() {
 		runCount = 0;
 		failures = new ArrayList<TestFailure>();
-		success = new ArrayList<TestSuccess>();
+		successes = new ArrayList<TestSuccess>();
 		skips = new ArrayList<TestSkip>();
 		shouldStop = false;
 	}
@@ -34,9 +34,12 @@ public class TestResult {
 	 *            run the test, and add the result to the specific list
 	 */
 	public void run(final TestCase test) {
-		startRunCommand(test);
-		runCount++;
-		getResult(test);
+		while (!shouldStop()) {
+			runCount++;
+			PrintUtil.info(runCount + "times : " + test.toString());
+			startRunCommand(test);
+			getResult(test);
+		}
 	}
 
 	private void startRunCommand(TestCase test) {
@@ -57,7 +60,7 @@ public class TestResult {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
 					if (report.getName().equals(reportName)) {
-						analyseReport(report);
+						analyseReport(report, test);
 					}
 				}
 			}
@@ -66,7 +69,8 @@ public class TestResult {
 		}
 	}
 
-	private void analyseReport(File report) {
+	@SuppressWarnings("unchecked")
+	private void analyseReport(File report, Test test) {
 		if (report != null) {
 			XMLAnalyser reportAnalyser = new XMLAnalyser(report);
 			List<Node> caseNodeList = reportAnalyser
@@ -74,28 +78,78 @@ public class TestResult {
 			if (caseNodeList != null && caseNodeList.size() > 0) {
 				Node caseNode = caseNodeList.get(0);
 				List<Node> childNodes = caseNode.selectNodes("//*");
-				if(childNodes != null && childNodes.size() > 0){
-				Node childNode = childNodes.get(0);
-				String caseType = childNode.getName();
-				if (caseType.equals("error") || caseType.equals("failure")) {
-					addFailure(caseNode);
+				if (childNodes != null && childNodes.size() > 0) {
+					Node childNode = childNodes.get(0);
+					String caseType = childNode.getName();
+					if (caseType.equals("error") || caseType.equals("failure")) {
+						addFailure(caseNode, test);
+					} else {
+						PrintUtil.warning("Unknow node: " + caseType);
+					}
 				} else {
-					addSuccess(caseNode);
-				}
+					addSuccess(caseNode, test);
 				}
 			}
 		}
 	}
 
-	private void addFailure(Node caseNode) {
+	private void addFailure(Node caseNode, Test test) {
+		String durationTimeStr = caseNode.valueOf("@time");
+		Node childNode = (Node) caseNode.selectNodes("//*").get(0);
+		String errorDetails = childNode.valueOf("@type");
+		String errorStackTrace = childNode.getText();
+		TestFailure failure = new TestFailure(test, errorDetails,
+				errorStackTrace, null, runCount,
+				new BigDecimal(durationTimeStr));
+		failures.add(failure);
+	}
+
+	private void addSuccess(Node caseNode, Test test) {
+		String durationTimeStr = caseNode.valueOf("@time");
+		TestSuccess success = new TestSuccess(test, null, runCount,
+				new BigDecimal(durationTimeStr));
+		successes.add(success);
+	}
+
+	private void addSkip(Node caseNode, Test test) {
 
 	}
 
-	private void addSuccess(Node caseNode) {
-	}
+	public boolean shouldStop() {
+		for (TestSuccess success : successes) {
+			if (success.getRunNumber() == runCount) {
+				shouldStop = true;
+				return shouldStop;
+			}
+		}
 
-	private void addSkip(Node caseNode) {
+		if (failures.size() > 2) {
+			TestFailure lastFailure = failures.get(failures.size() - 1);
+			if (lastFailure.getRunNumber() == runCount) {
+				TestFailure preFailure = failures.get(failures.size() - 2);
+				if (preFailure.getRunNumber() == runCount - 1) {
+					if (preFailure.getErrorDetails() == null
+							&& lastFailure.getErrorDetails() == null) {
+						if (preFailure.getErrorStackTrace().equals(
+								lastFailure.getErrorStackTrace())) {
+							shouldStop = true;
+						}
+					} else if (preFailure.getErrorDetails() != null
+							&& preFailure.getErrorDetails() != null) {
+						if (preFailure.getErrorDetails().equals(
+								preFailure.getErrorDetails())
+								&& preFailure.getErrorStackTrace().equals(
+										lastFailure.getErrorStackTrace())) {
+							shouldStop = true;
+						}
+					}
+				}
+			}
+		} else if (failures.size() >= 3) {
+			shouldStop = true;
+		}
 
+		return shouldStop;
 	}
 
 }

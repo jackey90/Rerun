@@ -12,4 +12,10 @@ public class PrintUtil {
 		System.out.println(str);
 		System.out.println();
 	}
+	
+	public static void info(String str) {
+		System.out.println("Info xxxxxxxxxxxxxxxxxxxxxxxx");
+		System.out.println(str);
+		System.out.println();
+	}
 }
