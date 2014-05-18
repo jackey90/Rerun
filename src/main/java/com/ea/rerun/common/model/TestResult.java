@@ -17,6 +17,11 @@ public class TestResult {
 	private List<TestSuccess> successes;
 	private List<TestSkip> skips;
 	private boolean shouldStop;
+	private TestResultType resultType;
+	private String errorDetails;
+	private String errorStackTrace;
+	private String stdout;
+	private BigDecimal durationTime;
 
 	public TestResult() {
 		runCount = 0;
@@ -24,6 +29,11 @@ public class TestResult {
 		successes = new ArrayList<TestSuccess>();
 		skips = new ArrayList<TestSkip>();
 		shouldStop = false;
+		resultType = TestResultType.UnStable_Failed;
+		errorDetails = "";
+		errorStackTrace = "";
+		stdout = "";
+		durationTime = BigDecimal.ZERO;
 	}
 
 	/**
@@ -169,6 +179,42 @@ public class TestResult {
 		}
 
 		return shouldStop;
+	}
+
+	public int getRunCount() {
+		return runCount;
+	}
+
+	public List<TestFailure> getFailures() {
+		return failures;
+	}
+
+	public List<TestSuccess> getSuccesses() {
+		return successes;
+	}
+
+	public List<TestSkip> getSkips() {
+		return skips;
+	}
+
+	public TestResultType getResultType() {
+		return resultType;
+	}
+
+	public String getErrorDetails() {
+		return errorDetails;
+	}
+
+	public String getErrorStackTrace() {
+		return errorStackTrace;
+	}
+
+	public String getStdout() {
+		return stdout;
+	}
+
+	public BigDecimal getDurationTime() {
+		return durationTime;
 	}
 
 }
