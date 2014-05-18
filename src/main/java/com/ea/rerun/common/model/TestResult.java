@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.dom4j.Node;
 
-import com.ea.rerun.getData.model.config.RerunConfig;
+import com.ea.rerun.util.LogUtil;
 import com.ea.rerun.util.MavenUtil;
 import com.ea.rerun.util.PrintUtil;
 import com.ea.rerun.util.XMLAnalyser;
@@ -49,7 +49,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = 5; i >= 0; i--) {
+				for (int i = 2; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);
@@ -57,7 +57,7 @@ public class TestResult {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			startRunCommand(test);
+			//startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -67,8 +67,7 @@ public class TestResult {
 	}
 
 	public void copyReport(TestCase test, File report) {
-		
-		String logPath = RerunConfig.getInstance().getLogConfig().getLogPath();
+		LogUtil.copyReport(test, report);
 	}
 
 	private void getResult(TestCase test) {
