@@ -37,7 +37,7 @@ public class MavenUtil {
 				pb = new ProcessBuilder(command);
 			}
 
-			//pb.redirectErrorStream();
+			// pb.redirectErrorStream();
 			Process p = pb.start();
 			InputStreamConsumer isc = new InputStreamConsumer(
 					p.getInputStream());
