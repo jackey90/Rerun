@@ -57,7 +57,7 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 										TestCase testCase = new TestCase();
 										if (pomPath != null) {
 											String[] pathArray = pomPath
-													.split("\\\\\\\\");
+													.split("\\\\");
 											if (pathArray.length >= 3) {
 												if (!pathArray[pathArray.length - 3]
 														.contains("nexus")) {

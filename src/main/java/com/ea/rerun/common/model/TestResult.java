@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.dom4j.Node;
 
+import com.ea.rerun.getData.model.config.RerunConfig;
 import com.ea.rerun.util.MavenUtil;
 import com.ea.rerun.util.PrintUtil;
 import com.ea.rerun.util.XMLAnalyser;
@@ -48,7 +49,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = 0; i >= 0; i--) {
+				for (int i = 5; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);
@@ -65,6 +66,11 @@ public class TestResult {
 		MavenUtil.run(test.getMavenCommand());
 	}
 
+	public void copyReport(TestCase test, File report) {
+		
+		String logPath = RerunConfig.getInstance().getLogConfig().getLogPath();
+	}
+
 	private void getResult(TestCase test) {
 		String pomPath = test.getPomPath();
 		if (pomPath != null) {
@@ -79,6 +85,7 @@ public class TestResult {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
 					if (report.getName().equals(reportName)) {
+						copyReport(test, report);
 						analyseReport(report, test);
 					}
 				}
@@ -114,9 +121,12 @@ public class TestResult {
 
 	private void addFailure(Node caseNode, Test test) {
 		String durationTimeStr = caseNode.valueOf("@time");
-		Node childNode = (Node) caseNode.selectNodes("//*").get(0);
+		Node childNode = (Node) caseNode.selectNodes(".//*").get(0);
 		String errorDetails = childNode.valueOf("@type");
 		String errorStackTrace = childNode.getText();
+		this.errorDetails = errorDetails;
+		this.errorStackTrace = errorStackTrace;
+		this.durationTime = new BigDecimal(durationTimeStr);
 		TestFailure failure = new TestFailure(test, errorDetails,
 				errorStackTrace, null, runCount,
 				new BigDecimal(durationTimeStr));
@@ -125,6 +135,7 @@ public class TestResult {
 
 	private void addSuccess(Node caseNode, Test test) {
 		String durationTimeStr = caseNode.valueOf("@time");
+		this.durationTime = new BigDecimal(durationTimeStr);
 		TestSuccess success = new TestSuccess(test, null, runCount,
 				new BigDecimal(durationTimeStr));
 		successes.add(success);
@@ -138,6 +149,7 @@ public class TestResult {
 		for (TestSuccess success : successes) {
 			if (success.getRunNumber() == runCount) {
 				shouldStop = true;
+				resultType = TestResultType.Successed;
 				PrintUtil.info("Success !");
 				return shouldStop;
 			}
@@ -155,6 +167,7 @@ public class TestResult {
 							if (preFailure.getErrorStackTrace().equals(
 									lastFailure.getErrorStackTrace())) {
 								shouldStop = true;
+								resultType = TestResultType.Stable_Failed;
 								PrintUtil.info("Stable failure!");
 							}
 						} else if (preFailure.getErrorDetails() != null
@@ -164,6 +177,7 @@ public class TestResult {
 									&& preFailure.getErrorStackTrace().equals(
 											lastFailure.getErrorStackTrace())) {
 								shouldStop = true;
+								resultType = TestResultType.Stable_Failed;
 								PrintUtil.info("Stable failure!");
 							}
 						}
@@ -175,6 +189,7 @@ public class TestResult {
 
 		if (runCount >= 4) {
 			shouldStop = true;
+			resultType = TestResultType.UnStable_Failed;
 			PrintUtil.info("Unstable failure");
 		}
 
