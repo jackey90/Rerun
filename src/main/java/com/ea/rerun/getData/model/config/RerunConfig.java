@@ -4,7 +4,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
-import com.ea.rerun.util.PrintUtil;
+import com.ea.rerun.common.util.PrintUtil;
 
 /**
  * @author Jackey jaceky90.hj@gmail.com

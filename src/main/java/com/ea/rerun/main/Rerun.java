@@ -1,7 +1,6 @@
 package com.ea.rerun.main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Map;
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
-import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.IGetData;

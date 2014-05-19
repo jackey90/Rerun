@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ea.rerun.common.util.MavenUtil;
+
 public class TestMavenUtil {
 	@Test
 	public void testRun() {

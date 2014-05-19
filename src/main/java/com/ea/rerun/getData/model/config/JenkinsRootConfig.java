@@ -11,7 +11,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-import com.ea.rerun.util.PrintUtil;
+import com.ea.rerun.common.util.PrintUtil;
 
 public class JenkinsRootConfig {
 

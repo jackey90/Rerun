@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.dom4j.Node;
 
-import com.ea.rerun.util.LogUtil;
-import com.ea.rerun.util.MavenUtil;
-import com.ea.rerun.util.PrintUtil;
-import com.ea.rerun.util.XMLAnalyser;
+import com.ea.rerun.common.util.LogUtil;
+import com.ea.rerun.common.util.MavenUtil;
+import com.ea.rerun.common.util.PrintUtil;
+import com.ea.rerun.common.util.XMLAnalyser;
 import com.ibm.icu.math.BigDecimal;
 
 public class TestResult {
