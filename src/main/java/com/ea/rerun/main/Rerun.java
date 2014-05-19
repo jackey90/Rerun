@@ -2,6 +2,7 @@ package com.ea.rerun.main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
 import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.feedback.IFeedBack;
+import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
 import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
@@ -40,32 +42,62 @@ public class Rerun {
 		List<MavenRerunTestCase> list = an.getAnalyseData();
 		List<String> strList = new ArrayList<String>();
 		int i = 1;
-		Map<String, List<TestCase>> map = new HashMap<String, List<TestCase>>();
+		Map<String, Map<String, RerunJobResult>> finalResult = new LinkedHashMap<String, Map<String, RerunJobResult>>();
+		// Map<String, List<TestCase>> map = new HashMap<String,
+		// List<TestCase>>();
 		for (MavenRerunTestCase cmd : list) {
-			if (cmd.getJobName().equals("rating-Comprehensive")) {
-				System.out.print("");
-			}
 			System.out.println(cmd.getTestCase().toString());
 			System.out.println(cmd.getTestCase().getMavenCommand());
 			cmd.getTestCase().run();
-			
-			
-			if (map.containsKey(cmd.getJobName())) {
-				List<TestCase> caseList = map.get(cmd.getJobName());
-				if (caseList == null) {
-					caseList = new ArrayList<TestCase>();
+
+			if (finalResult.containsKey(cmd.getViewName())) {
+				Map<String, RerunJobResult> map = finalResult.get(cmd
+						.getViewName());
+				if (map == null) {
+					map = new LinkedHashMap<String, RerunJobResult>();
 				}
-				caseList.add(cmd.getTestCase());
+				if (map.containsKey(cmd.getJobName())) {
+					RerunJobResult jobResult = map.get(cmd.getJobName());
+					if (jobResult == null) {
+						jobResult = new RerunJobResult(cmd.getViewName(),
+								cmd.getJobName());
+
+					}
+					jobResult.addTestCase(cmd.getTestCase());
+
+				} else {
+					RerunJobResult jobResult = new RerunJobResult(
+							cmd.getViewName(), cmd.getJobName());
+					jobResult.addTestCase(cmd.getTestCase());
+					map.put(cmd.getJobName(), jobResult);
+				}
 			} else {
-				List<TestCase> caseList = new ArrayList<TestCase>();
-				caseList.add(cmd.getTestCase());
-				map.put(cmd.getJobName(), caseList);
+				Map<String, RerunJobResult> map = new LinkedHashMap<String, RerunJobResult>();
+				RerunJobResult jobResult = new RerunJobResult(
+						cmd.getViewName(), cmd.getJobName());
+				jobResult.addTestCase(cmd.getTestCase());
+				map.put(cmd.getJobName(), jobResult);
+				finalResult.put(cmd.getViewName(), map);
 			}
 		}
 
-		
-		
-		
+		for (Map.Entry<String, Map<String, RerunJobResult>> finalEntry : finalResult
+				.entrySet()) {
+			System.out.println("**********************  " + finalEntry.getKey()
+					+ "  *****************");
+			for (Map.Entry<String, RerunJobResult> jobEntry : finalEntry
+					.getValue().entrySet()) {
+				RerunJobResult jobResult = jobEntry.getValue();
+				System.out.println(jobEntry.getKey() + " Total: "
+						+ jobResult.getAllCount() + "   Success :"
+						+ jobResult.getSuccessCount() + "    Failed :"
+						+ jobResult.getFailureCount() + "    Error :"
+						+ jobResult.getErrorCount() + "   Skipped :"
+						+ jobResult.getSkipCount());
+			}
+			System.out.println();
+		}
+
 		System.out.println();
 	}
 

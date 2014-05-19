@@ -172,6 +172,15 @@ public class TestResult {
 			}
 		}
 
+		for (TestFailure error : errors) {
+			if (error.getRunNumber() == runCount) {
+				shouldStop = true;
+				resultType = TestResultType.Error;
+				PrintUtil.info("Error !");
+				return shouldStop;
+			}
+		}
+
 		if (runCount <= 3) {
 
 			if (failures.size() >= 2) {
@@ -252,6 +261,5 @@ public class TestResult {
 	public List<TestFailure> getErrors() {
 		return errors;
 	}
-
 
 }

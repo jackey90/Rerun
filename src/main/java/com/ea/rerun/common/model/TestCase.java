@@ -17,7 +17,7 @@ public class TestCase implements Test {
 		return result;
 	}
 
-	private TestResult getResult() {
+	public TestResult getResult() {
 		if (result == null) {
 			result = new TestResult();
 		}
