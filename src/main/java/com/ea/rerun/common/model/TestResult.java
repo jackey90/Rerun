@@ -16,6 +16,7 @@ public class TestResult {
 	private int runCount;
 	private List<TestFailure> failures;
 	private List<TestSuccess> successes;
+	private List<TestFailure> errors;
 	private List<TestSkip> skips;
 	private boolean shouldStop;
 	private TestResultType resultType;
@@ -28,6 +29,7 @@ public class TestResult {
 		runCount = 0;
 		failures = new ArrayList<TestFailure>();
 		successes = new ArrayList<TestSuccess>();
+		errors = new ArrayList<TestFailure>();
 		skips = new ArrayList<TestSkip>();
 		shouldStop = false;
 		resultType = TestResultType.UnStable_Failed;
@@ -57,7 +59,7 @@ public class TestResult {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			//startRunCommand(test);
+			// startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -106,8 +108,10 @@ public class TestResult {
 				if (childNodes != null && childNodes.size() > 0) {
 					Node childNode = childNodes.get(0);
 					String caseType = childNode.getName();
-					if (caseType.equals("error") || caseType.equals("failure")) {
+					if (caseType.equals("failure")) {
 						addFailure(caseNode, test);
+					} else if (caseType.equals("error")) {
+						addError(caseNode, test);
 					} else {
 						PrintUtil.warning("Unknow node: " + caseType);
 					}
@@ -116,6 +120,20 @@ public class TestResult {
 				}
 			}
 		}
+	}
+
+	private void addError(Node caseNode, Test test) {
+		String durationTimeStr = caseNode.valueOf("@time");
+		Node childNode = (Node) caseNode.selectNodes(".//*").get(0);
+		String errorDetails = childNode.valueOf("@type");
+		String errorStackTrace = childNode.getText();
+		this.errorDetails = errorDetails;
+		this.errorStackTrace = errorStackTrace;
+		this.durationTime = new BigDecimal(durationTimeStr);
+		TestFailure failure = new TestFailure(test, errorDetails,
+				errorStackTrace, null, runCount,
+				new BigDecimal(durationTimeStr));
+		errors.add(failure);
 	}
 
 	private void addFailure(Node caseNode, Test test) {
@@ -230,5 +248,10 @@ public class TestResult {
 	public BigDecimal getDurationTime() {
 		return durationTime;
 	}
+
+	public List<TestFailure> getErrors() {
+		return errors;
+	}
+
 
 }
