@@ -49,7 +49,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = 2; i >= 0; i--) {
+				for (int i = -1; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);

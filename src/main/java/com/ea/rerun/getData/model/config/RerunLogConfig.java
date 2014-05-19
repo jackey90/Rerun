@@ -51,7 +51,7 @@ public class RerunLogConfig extends XMLAnalyser {
 			result = RerunConfig.currentPath + "\\rerunLog";
 			warning("logPath not set, use default :  " + result);
 		}
-		return null;
+		return result;
 	}
 
 	public KeepLogEnum getKeepLogEnum() {

@@ -1,7 +1,9 @@
 package com.ea.rerun.util;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -20,8 +22,8 @@ public class LogUtil {
 		int daysToKeep = logConfig.getDaysToKeep();
 
 		deleteDayBefore(daysToKeep);
-		copyAllReport(testCase,orgReport);
-		
+		copyReportAll(testCase, orgReport);
+
 		switch (logConfig.getKeepLogEnum()) {
 		case KeepAll:
 			break;
@@ -40,22 +42,36 @@ public class LogUtil {
 
 	}
 
-	private static void copyAllReport(TestCase test, File orgReport) {
-		File logDir = new File(logConfig.getLogPath());
-		if (!logDir.exists()) {
-			try {
-				logDir.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	private static void copyReportAll(TestCase test, File orgReport) {
 		File desReport = new File(logConfig.getLogPath() + "\\"
 				+ test.getBranch() + "\\" + test.getPack() + "\\"
 				+ test.getClassName() + "\\" + test.getTestName() + ".xml");
-
+		File desReportDir = new File(logConfig.getLogPath() + "\\"
+				+ test.getBranch() + "\\" + test.getPack() + "\\"
+				+ test.getClassName());
+		
 		try {
-			FileUtils.copyFile(desReport, orgReport);
-		} catch (IOException e) {
+			
+			if(!desReportDir.exists()){
+				FileUtils.forceMkdir(desReportDir);
+			}
+			int byteread = 0;
+			if (orgReport.exists()) {
+
+				if (desReport.exists()) {
+					desReport.delete();
+				}
+				InputStream inStream = new FileInputStream(orgReport);
+				FileOutputStream fs = new FileOutputStream(desReport, false);
+				byte[] buffer = new byte[1024];
+				while ((byteread = inStream.read(buffer)) != -1) {
+					fs.write(buffer, 0, byteread);
+				}
+				fs.close();
+				inStream.close();
+			}
+		} catch (Exception e) {
+			PrintUtil.warning("Fail to generate report " + desReport.getName());
 			e.printStackTrace();
 		}
 	}
