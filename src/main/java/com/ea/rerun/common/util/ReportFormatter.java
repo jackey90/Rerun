@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ea.rerun.feedback.model.RerunJobResult;
+
 public class ReportFormatter {
 	private String templateFile = "";
 
@@ -33,6 +35,10 @@ public class ReportFormatter {
 
 	public ReportFormatter(String templateFile) {
 		this.templateFile = templateFile;
+	}
+	
+	public void Job2Tr(RerunJobResult job){
+		
 	}
 
 	public String formatReport(List<ReportSection> reportSectionList) {

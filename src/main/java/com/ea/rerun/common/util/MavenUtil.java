@@ -38,11 +38,11 @@ public class MavenUtil {
 			}
 
 			//pb.redirectErrorStream();
-			Process p = pb.start();
+			process = pb.start();
 			InputStreamConsumer isc = new InputStreamConsumer(
-					p.getInputStream());
+					process.getInputStream());
 			isc.start();
-			int exitCode = p.waitFor();
+			int exitCode = process.waitFor();
 			isc.join();
 			System.out.println("Process terminated with " + exitCode);
 		} catch (IOException e) {
@@ -87,6 +87,7 @@ public class MavenUtil {
 			} finally {
 				try {
 					is.close();
+					br.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
