@@ -1,4 +1,4 @@
-package com.ea.rerun.util;
+package com.ea.rerun.common.util;
 
 public class StringUtil {
 	public static boolean isNullOrEmpty(String str) {

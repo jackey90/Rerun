@@ -1,4 +1,4 @@
-package com.ea.rerun.util;
+package com.ea.rerun.common.util;
 
 import java.util.Comparator;
 

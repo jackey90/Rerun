@@ -8,6 +8,10 @@ import java.util.Map;
 
 import org.dom4j.Node;
 
+import com.ea.rerun.common.util.FileAnalyser;
+import com.ea.rerun.common.util.PrintUtil;
+import com.ea.rerun.common.util.StringUtil;
+import com.ea.rerun.common.util.XMLAnalyser;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.model.config.JenkinsRootConfig;
 import com.ea.rerun.getData.model.config.RerunConfig;
@@ -18,10 +22,6 @@ import com.ea.rerun.getData.model.orgData.JenkinsJunitResultSuite;
 import com.ea.rerun.getData.model.orgData.JenkinsModule;
 import com.ea.rerun.getData.model.orgData.JenkinsTestCaseStatusEnum;
 import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
-import com.ea.rerun.util.FileAnalyser;
-import com.ea.rerun.util.PrintUtil;
-import com.ea.rerun.util.StringUtil;
-import com.ea.rerun.util.XMLAnalyser;
 import com.ibm.icu.math.BigDecimal;
 
 /**

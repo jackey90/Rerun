@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.dom4j.Document;
 
-import com.ea.rerun.util.XMLAnalyser;
+import com.ea.rerun.common.util.XMLAnalyser;
 
 public class RerunReportConfig extends XMLAnalyser {
 
