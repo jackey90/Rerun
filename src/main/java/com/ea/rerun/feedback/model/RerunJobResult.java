@@ -127,7 +127,7 @@ public class RerunJobResult {
 		RerunClassResult classResult = classResults
 				.get(testCase.getClassName());
 		if (classResult == null) {
-			classResult = new RerunClassResult();
+			classResult = new RerunClassResult(testCase.getClassName());
 			classResults.put(testCase.getClassName(), classResult);
 		}
 		classResult.addToCatagory(testCase);

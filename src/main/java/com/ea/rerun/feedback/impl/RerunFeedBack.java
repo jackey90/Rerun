@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ea.rerun.common.model.TestCase;
+import com.ea.rerun.common.util.ReportFormatter;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.model.ReportCell;
 import com.ea.rerun.feedback.model.ReportModel;
@@ -21,7 +22,7 @@ import com.ea.rerun.feedback.model.RerunJobResult;
  */
 public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
-	private String address= "123";
+	private String address = "123";
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
 		this.finalResult = finalResult;
@@ -29,6 +30,9 @@ public class RerunFeedBack implements IFeedBack {
 
 	public void feedBack() {
 		List<ReportModel> report = toReportModel(finalResult);
+		ReportFormatter formatReport = new ReportFormatter(
+				report);
+		formatReport.formatReport();
 		System.out.println();
 	}
 
@@ -85,16 +89,16 @@ public class RerunFeedBack implements IFeedBack {
 			boolean withBug) {
 		if (jobResult != null) {
 			List<List<ReportCell>> list = new ArrayList<List<ReportCell>>();
-			List<ReportCell> firstTr = new ArrayList<ReportCell>();
-			list.add(firstTr);
+			List<ReportCell> jobTr = new ArrayList<ReportCell>();
+			list.add(jobTr);
 			ReportCell jobTd = new ReportCell("rowspan=\""
 					+ jobResult.getAllCount() + "\"", "",
 					jobResult.getJobName());
-			firstTr.add(jobTd);
+			jobTr.add(jobTd);
 			ReportCell performanceTd = new ReportCell("rowspan=\""
 					+ jobResult.getAllCount() + "\"", "",
 					getPerformance(jobResult));
-			firstTr.add(performanceTd);
+			jobTr.add(performanceTd);
 			Map<String, RerunClassResult> classResultMap = jobResult
 					.getClassResults();
 			// Iterator<RerunClassResult> classResultItr =
@@ -104,18 +108,18 @@ public class RerunFeedBack implements IFeedBack {
 			for (Map.Entry<String, RerunClassResult> classResultEntry : classResultMap
 					.entrySet()) {
 				classIndex++;
-				List<ReportCell> subTr = null;
+				List<ReportCell> classTr = null;
 				RerunClassResult classResult = classResultEntry.getValue();
 
 				ReportCell classNameTd = new ReportCell("rowspan=\""
 						+ classResult.getCount() + "\"", "",
 						classResult.getClassName());
 				if (classIndex == 1) {
-					firstTr.add(classNameTd);
+					jobTr.add(classNameTd);
 				} else {
-					subTr = new ArrayList<ReportCell>();
-					list.add(subTr);
-					subTr.add(classNameTd);
+					classTr = new ArrayList<ReportCell>();
+					list.add(classTr);
+					classTr.add(classNameTd);
 				}
 
 				Map<String, List<TestCase>> failureCatagoryMap = classResult
@@ -124,7 +128,7 @@ public class RerunFeedBack implements IFeedBack {
 				for (Map.Entry<String, List<TestCase>> catagoryEntry : failureCatagoryMap
 						.entrySet()) {
 					catagoryIndex++;
-					List<ReportCell> subsubTr = null;
+					List<ReportCell> catagoryTr = null;
 
 					String errorSummary = catagoryEntry.getKey();
 					List<TestCase> cases = catagoryEntry.getValue();
@@ -134,24 +138,24 @@ public class RerunFeedBack implements IFeedBack {
 					ReportCell failedNumber = new ReportCell("rowspan=\""
 							+ cases.size() + "\"", "", cases.size() + "");
 					if (classIndex == 1 && catagoryIndex == 1) {
-						firstTr.add(failureCatagory);
-						firstTr.add(failedNumber);
+						jobTr.add(failureCatagory);
+						jobTr.add(failedNumber);
 					} else if (classIndex != 1 && catagoryIndex == 1) {
-						if (subTr != null) {
-							subTr.add(failureCatagory);
-							subTr.add(failedNumber);
+						if (classTr != null) {
+							classTr.add(failureCatagory);
+							classTr.add(failedNumber);
 						}
-					} else if (classIndex != 1 && catagoryIndex != 1) {
-						subsubTr = new ArrayList<ReportCell>();
-						list.add(subsubTr);
-						subsubTr.add(failureCatagory);
-						subsubTr.add(failedNumber);
+					} else if (catagoryIndex != 1) {
+						catagoryTr = new ArrayList<ReportCell>();
+						list.add(catagoryTr);
+						catagoryTr.add(failureCatagory);
+						catagoryTr.add(failedNumber);
 					}
 
 					int caseIndex = 0;
 					for (TestCase testCase : cases) {
 						caseIndex++;
-						List<ReportCell> subsubsubTr = null;
+						List<ReportCell> caseTr = null;
 
 						ReportCell caseName = new ReportCell("rowspan=\"" + 1
 								+ "\"", "", testCase.getTestName());
@@ -160,26 +164,35 @@ public class RerunFeedBack implements IFeedBack {
 								+ "");
 						if (classIndex == 1 && catagoryIndex == 1
 								&& caseIndex == 1) {
-							firstTr.add(caseName);
-							firstTr.add(rerunTimes);
-						} else if (caseIndex != 1 && catagoryIndex == 1
+							jobTr.add(caseName);
+							jobTr.add(rerunTimes);
+							ReportCell mvnCommand = new ReportCell("rowspan=\""
+									+ jobResult.getAllCount() + "\"", "",
+									testCase.getMavenCommand());
+							jobTr.add(mvnCommand);
+						} else if (classIndex == 1 && catagoryIndex != 1
 								&& caseIndex == 1) {
-							if (subTr != null) {
-								subTr.add(caseName);
-								subTr.add(rerunTimes);
+							if (catagoryTr != null) {
+								catagoryTr.add(caseName);
+								catagoryTr.add(rerunTimes);
 							}
-						} else if (caseIndex != 1 && catagoryIndex != 1
+						} else if (classIndex != 1 && catagoryIndex == 1
 								&& caseIndex == 1) {
-							if (subsubTr != null) {
-								subsubTr.add(caseName);
-								subsubTr.add(rerunTimes);
+							if (classTr != null) {
+								classTr.add(caseName);
+								classTr.add(rerunTimes);
 							}
-						} else if (caseIndex != 1 && catagoryIndex != 1
-								&& caseIndex != 1) {
-							subsubsubTr = new ArrayList<ReportCell>();
-							list.add(subsubsubTr);
-							subsubsubTr.add(caseName);
-							subsubsubTr.add(rerunTimes);
+						} else if (classIndex != 1 && catagoryIndex != 1
+								&& caseIndex == 1) {
+							if (catagoryTr != null) {
+								catagoryTr.add(caseName);
+								catagoryTr.add(rerunTimes);
+							}
+						} else if (caseIndex != 1) {
+							caseTr = new ArrayList<ReportCell>();
+							list.add(caseTr);
+							caseTr.add(caseName);
+							caseTr.add(rerunTimes);
 						}
 					}
 				}

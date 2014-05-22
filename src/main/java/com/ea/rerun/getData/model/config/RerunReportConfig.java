@@ -35,7 +35,7 @@ public class RerunReportConfig extends XMLAnalyser {
 
 		}
 		if (!new File(result).exists()) {
-			result = "str\\main\\resources\\defaultReportTemplate.xml";
+			result = "src\\main\\resources\\defaultReportTemplate.xml";
 		}
 
 		return result;

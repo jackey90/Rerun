@@ -45,6 +45,9 @@ public class Rerun {
 		JenkinsTestResult result = r.getJenkinsTestResult();
 		AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(result);
 		List<MavenRerunTestCase> list = an.getAnalyseData();
+		for (int i = 0; i < list.size(); i++) {
+			System.out.println(list.get(i).getTestCase().toString());
+		}
 		List<String> strList = new ArrayList<String>();
 		int i = 1;
 		Map<String, Map<String, RerunJobResult>> finalResult = new LinkedHashMap<String, Map<String, RerunJobResult>>();
@@ -93,17 +96,28 @@ public class Rerun {
 			for (Map.Entry<String, RerunJobResult> jobEntry : finalEntry
 					.getValue().entrySet()) {
 				RerunJobResult jobResult = jobEntry.getValue();
-				System.out.println(jobEntry.getKey() + " Total: "
-						+ jobResult.getAllCount() + "   Success :"
-						+ jobResult.getSuccessCount() + "    Failed :"
-						+ jobResult.getFailureCount() + "    Error :"
-						+ jobResult.getErrorCount() + "   Skipped :"
-						+ jobResult.getSkipCount());
+				System.out.println("jobjobjobjobjob    "
+						+ jobResult.getJobName());
+				for (Map.Entry<String, RerunClassResult> classEntry : jobResult
+						.getClassResults().entrySet()) {
+					System.out.println("ClassClassClassClassClass    "
+							+ classEntry.getKey());
+					for (Map.Entry<String, List<TestCase>> caseEntry : classEntry
+							.getValue().getFailureCatagory().entrySet()) {
+						System.out.println(caseEntry.getKey());
+						for (TestCase testCase : caseEntry.getValue()) {
+							System.out
+									.println("testCasetestCasetestCasetestCase     "
+											+ testCase.toString());
+						}
+					}
+				}
+
 			}
 			System.out.println();
 		}
 		rerunFeedBack = new RerunFeedBack(finalResult);
-		
+
 		rerunFeedBack.feedBack();
 
 		System.out.println();
@@ -128,6 +142,5 @@ public class Rerun {
 	public IAnalyse getAnalyseData() {
 		return analyseData;
 	}
-	
 
 }

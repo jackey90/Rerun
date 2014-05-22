@@ -1,6 +1,7 @@
 package com.ea.rerun.feedback.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +9,14 @@ import com.ea.rerun.common.model.TestCase;
 
 public class RerunClassResult {
 	private String className;
-	private Map<String, List<TestCase>> failureCatagory;
-	private List<TestCase> cases;
+	private Map<String, List<TestCase>> failureCatagory = new LinkedHashMap<String, List<TestCase>>();
+	private List<TestCase> cases = new ArrayList<TestCase>();
 
+	
+	public RerunClassResult(String className){
+		this.className = className;
+	}
+	
 	public void addToCatagory(TestCase testCase) {
 		cases.add(testCase);
 		String category = testCase.getResult().getFailureSummary();
