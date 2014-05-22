@@ -6,12 +6,15 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ea.rerun.feedback.model.RerunJobResult;
 
 public class ReportFormatter {
+	private Map<String, Map<String, RerunJobResult>> finalResult;
+
 	private String templateFile = "";
 
 	private final String reportSectionBodyPlaceHolderName = "###ReportSection###";
@@ -31,17 +34,17 @@ public class ReportFormatter {
 	private final String tableContentCellAdditionalAttrs = "###CELL_A_ATTRS###";
 	private final String tableTdAdditionalAttrs = "###TD_ATTRS###";
 
-	private String patternStringForPlaceHolderHasBody = "%s\\{(.*?)\\}%s";
+	private String templatePattern = "%s\\{(.*?)\\}%s";
 
 	public ReportFormatter(String templateFile) {
 		this.templateFile = templateFile;
 	}
-	
-	public void Job2Tr(RerunJobResult job){
-		
+
+	public void Job2Tr(RerunJobResult job) {
+
 	}
 
-	public String formatReport(List<ReportSection> reportSectionList) {
+	public String formatReport() {
 		String templateContent = "";
 		try {
 			File file = new File(templateFile);
@@ -60,109 +63,44 @@ public class ReportFormatter {
 			e.printStackTrace();
 		}
 
-		Entry<String, Integer> reportSectionTemplate = getUniqueBodyPlaceHolder(
+		String reportSectionTemplate = getReportTemplate(
 				reportSectionBodyPlaceHolderName, templateContent);
-		Entry<String, Integer> headFieldTemplate = getUniqueBodyPlaceHolder(
-				fieldBodyPlaceHolderName, reportSectionTemplate.key);
-		Entry<String, Integer> tableHeadRowTemplate = getUniqueBodyPlaceHolder(
-				tableHeadRowBodyPlaceHolderName, reportSectionTemplate.key);
-		Entry<String, Integer> tableHeadCellTemplate = getUniqueBodyPlaceHolder(
-				tableHeadCellBodyPlaceHolderName, reportSectionTemplate.key);
-		Entry<String, Integer> contentRowTemplate = getUniqueBodyPlaceHolder(
-				tableContentRowPlaceHolderName, reportSectionTemplate.key);
-		Entry<String, Integer> contentCellTemplate = getUniqueBodyPlaceHolder(
-				tableContentCellBodyPlaceHolderName, contentRowTemplate.key);
+		String headFieldTemplate = getReportTemplate(fieldBodyPlaceHolderName,
+				reportSectionTemplate);
+		String tableHeadRowTemplate = getReportTemplate(
+				tableHeadRowBodyPlaceHolderName, reportSectionTemplate);
+		String tableHeadCellTemplate = getReportTemplate(
+				tableHeadCellBodyPlaceHolderName, reportSectionTemplate);
+		String contentRowTemplate = getReportTemplate(
+				tableContentRowPlaceHolderName, reportSectionTemplate);
+		String contentCellTemplate = getReportTemplate(
+				tableContentCellBodyPlaceHolderName, contentRowTemplate);
+		for (Map.Entry<String, Map<String, RerunJobResult>> entry : finalResult
+				.entrySet()) {
+			String viewName = entry.getKey();
 
-		// report section heads.
-		StringBuilder reportSections = new StringBuilder();
-		for (ReportSection reportSection : reportSectionList) {
-			StringBuilder headFields = new StringBuilder();
-			for (Entry<String, String> headField : reportSection.headFields) {
-				headFields.append(headFieldTemplate.key.replace(
-						fieldNamePlaceHolderName, headField.key).replace(
-						fieldValuePlaceHolderName, headField.value));
+			Map<String,RerunJobResult> jobMap = entry.getValue();
+			String contenRowTemplate = "";
+			int jobIndex = 0;
+			for(Map.Entry<String,RerunJobResult> jobEntry: jobMap.entrySet()){
+				
 			}
-
-			// table head row.
-			StringBuilder columnsBuilder = new StringBuilder();
-			for (String columnName : reportSection.columnNames) {
-				columnsBuilder.append(tableHeadCellTemplate.key.replace(
-						tableColumnNamePlaceHolderName, columnName));
-			}
-			String tableHeadRow = replacePlaceHolderBody(
-					tableHeadRowTemplate.key, tableHeadCellBodyPlaceHolderName,
-					columnsBuilder.toString());
-
-			// table common rows.
-			StringBuilder contentRows = new StringBuilder();
-			for (List<ContentCell> reportItem : reportSection.items) {
-				StringBuilder currentRow = new StringBuilder();
-				for (ContentCell cell : reportItem) {
-					currentRow.append(contentCellTemplate.key
-							.replace(tableCellValuePlaceHolderName, cell.value)
-							.replace(tableContentCellAdditionalAttrs,
-									cell.cellAdditionalAttribute)
-							.replace(tableTdAdditionalAttrs,
-									cell.TdAdditionalAttribute));
-				}
-				contentRows.append(replacePlaceHolderBody(
-						contentRowTemplate.key,
-						tableContentCellBodyPlaceHolderName,
-						currentRow.toString()));
-			}
-
-			String afterPrepareHeads = replacePlaceHolderBody(
-					reportSectionTemplate.key, fieldBodyPlaceHolderName,
-					headFields.toString());
-			String afterPrepareTableHeads = replacePlaceHolderBody(
-					afterPrepareHeads, tableHeadRowBodyPlaceHolderName,
-					tableHeadRow);
-			reportSections.append(replacePlaceHolderBody(
-					afterPrepareTableHeads, tableContentRowPlaceHolderName,
-					contentRows.toString()));
+			
 		}
 
-		return replacePlaceHolderBody(templateContent,
-				reportSectionBodyPlaceHolderName, reportSections.toString());
+		return templateContent;
+
 	}
 
-	private String replacePlaceHolderBody(String context,
-			String placeHolderName, String contentWillBeUsedToReplace) {
+	private String getReportTemplate(String placeHolderName,
+			String templateContent) {
+		String result = "";
 		Pattern patternForPlaceHolderHasBody = Pattern.compile(String.format(
-				patternStringForPlaceHolderHasBody, placeHolderName,
-				placeHolderName), Pattern.DOTALL);
-		Matcher m = patternForPlaceHolderHasBody.matcher(context);
-		StringBuilder result = new StringBuilder(context);
-		while (m.find()) {
-			result.replace(m.start(), m.end(), contentWillBeUsedToReplace);
-		}
-		return result.toString();
-	}
-
-	private Entry<String, Integer> getUniqueBodyPlaceHolder(
-			String placeHolderName, String templateContent) {
-		List<Entry<String, Integer>> reportSectionPlaceHolders = getContentForBoyPlaceHolder(
-				placeHolderName, templateContent);
-		if (reportSectionPlaceHolders.size() != 1) {
-			throw new IllegalStateException("The template file " + templateFile
-					+ " is not expected have and only have one place holder "
-					+ placeHolderName);
-		}
-		return reportSectionPlaceHolders.get(0);
-	}
-
-	// bodyPlaceHolderName{<repeatContent>}bodyPlaceHolderName;
-	private List<Entry<String, Integer>> getContentForBoyPlaceHolder(
-			String placeHolderName, String templateContent) {
-		List<Entry<String, Integer>> result = new ArrayList<Entry<String, Integer>>();
-		Pattern patternForPlaceHolderHasBody = Pattern.compile(String.format(
-				patternStringForPlaceHolderHasBody, placeHolderName,
-				placeHolderName), Pattern.DOTALL);
+				templatePattern, placeHolderName, placeHolderName),
+				Pattern.DOTALL);
 		Matcher m = patternForPlaceHolderHasBody.matcher(templateContent);
-		while (m.find()) {
-			Entry<String, Integer> matchPart = new Entry<String, Integer>(
-					m.group(1), m.start());
-			result.add(matchPart);
+		if (m.find()) {
+			result = m.group(1);
 		}
 		return result;
 	}

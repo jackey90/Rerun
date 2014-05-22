@@ -262,4 +262,21 @@ public class TestResult {
 		return errors;
 	}
 
+	public String getFailureSummary() {
+		switch (resultType) {
+		case Error:
+		case Stable_Failed:
+		case UnStable_Failed:
+			return "<b>ERROR DETAILS:</b><br>"
+					+ errorDetails
+					+ "<b>ERROR STACK TRACE:</b><br>"
+					+ (errorStackTrace.length() > 300 ? errorStackTrace
+							: errorStackTrace.substring(0, 300));
+		case Successed:
+		case Skiped:
+		default:
+			return "Success";
+		}
+	}
+
 }

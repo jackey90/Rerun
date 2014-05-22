@@ -1,7 +1,9 @@
 package com.ea.rerun.feedback.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ea.rerun.common.model.TestCase;
 
@@ -14,6 +16,8 @@ public class RerunJobResult {
 	private List<TestCase> errors;
 	private List<TestCase> skips;
 
+	private Map<String, RerunClassResult> classResults = new LinkedHashMap<String, RerunClassResult>();
+
 	public RerunJobResult(String viewName, String jobName) {
 		this.viewName = viewName;
 		this.jobName = jobName;
@@ -24,6 +28,7 @@ public class RerunJobResult {
 	}
 
 	public void addTestCase(TestCase testCase) {
+		addToClassResults(testCase);
 		switch (testCase.getResult().getResultType()) {
 		case Error:
 			errors.add(testCase);
@@ -110,4 +115,21 @@ public class RerunJobResult {
 		this.skips = skips;
 	}
 
+	public Map<String, RerunClassResult> getClassResults() {
+		return classResults;
+	}
+
+	public void setClassResults(Map<String, RerunClassResult> classResults) {
+		this.classResults = classResults;
+	}
+
+	private void addToClassResults(TestCase testCase) {
+		RerunClassResult classResult = classResults
+				.get(testCase.getClassName());
+		if (classResult == null) {
+			classResult = new RerunClassResult();
+			classResults.put(testCase.getClassName(), classResult);
+		}
+		classResult.addToCatagory(testCase);
+	}
 }

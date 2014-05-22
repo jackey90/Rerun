@@ -1,6 +1,8 @@
 package com.ea.rerun.main;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,12 @@ import java.util.Map;
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
+import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.feedback.IFeedBack;
+import com.ea.rerun.feedback.impl.RerunFeedBack;
+import com.ea.rerun.feedback.model.ReportCell;
+import com.ea.rerun.feedback.model.ReportModel;
+import com.ea.rerun.feedback.model.RerunClassResult;
 import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
@@ -17,7 +24,7 @@ import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
 public class Rerun {
 	private IGetData getRerunData;
 	private IAnalyse analyseData;
-	private IFeedBack rerunFeedBack;
+	private static IFeedBack rerunFeedBack;
 
 	public Rerun() {
 		getRerunData = new GetOrgData();
@@ -95,6 +102,9 @@ public class Rerun {
 			}
 			System.out.println();
 		}
+		rerunFeedBack = new RerunFeedBack(finalResult);
+		
+		rerunFeedBack.feedBack();
 
 		System.out.println();
 	}
@@ -118,5 +128,6 @@ public class Rerun {
 	public IAnalyse getAnalyseData() {
 		return analyseData;
 	}
+	
 
 }
