@@ -2,6 +2,8 @@ package com.ea.rerun.feedback.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -26,21 +28,30 @@ import com.ea.rerun.feedback.model.RerunJobResult;
  */
 public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
-	private String address = "123";
+	private String url = "";
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
+		InetAddress addr;
+		try {
+			addr = InetAddress.getLocalHost();
+			String address = addr.getHostAddress();
+			url = "<a" + "http://" + address + ":8080" + ">" + "http://"
+					+ address + ":8080" + "</a>";
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
 		this.finalResult = finalResult;
 	}
 
 	public void feedBack() {
 		List<ReportModel> report = toReportModel(finalResult);
-		ReportFormatter formatReport = new ReportFormatter(
-				report);
-		String reportMessage =  formatReport.formatReport();
+		ReportFormatter formatReport = new ReportFormatter(report);
+		String reportMessage = formatReport.formatReport();
 		try {
 			File reportFile = new File("src\\main\\resources\\report.html");
 			String path = reportFile.getAbsolutePath();
-			if(!reportFile.exists()){
+			if (!reportFile.exists()) {
 				reportFile.createNewFile();
 			}
 			FileUtils.writeStringToFile(reportFile, reportMessage);
@@ -61,7 +72,7 @@ public class RerunFeedBack implements IFeedBack {
 				ReportModel reportModel = new ReportModel();
 				Map<String, String> fields = new LinkedHashMap<String, String>();
 				fields.put("Title : ", viewName);
-				fields.put("URL : ", address);
+				fields.put("URL : ", url);
 				fields.put("Report Date: ", new Date().toString());
 				reportModel.setFields(fields);
 				List<String> headers = getHeaders(false);
@@ -180,9 +191,13 @@ public class RerunFeedBack implements IFeedBack {
 								&& caseIndex == 1) {
 							jobTr.add(caseName);
 							jobTr.add(rerunTimes);
+							String mavenCommand = testCase.getMavenCommand();
+							String[] commandArray = mavenCommand
+									.split("-Dtest=");
 							ReportCell mvnCommand = new ReportCell("rowspan=\""
 									+ jobResult.getAllCount() + "\"", "",
-									testCase.getMavenCommand());
+									commandArray[0]
+											+ " -Dtest={FailedTestCase}");
 							jobTr.add(mvnCommand);
 						} else if (classIndex == 1 && catagoryIndex != 1
 								&& caseIndex == 1) {
