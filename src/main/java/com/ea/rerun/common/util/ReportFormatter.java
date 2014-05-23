@@ -81,22 +81,27 @@ public class ReportFormatter {
 				reportSectionTemplate, 0);
 		contentCellTemplate = getReportTemplate(tableContentCellHolder,
 				contentRowTemplate, 0);
+
+		StringBuffer sb = new StringBuffer();
 		if (report != null) {
 			for (ReportModel reportModel : report) {
-
+				sb.append(getReportBody(reportModel));
 			}
 		}
-
-		return templateContent;
-
+		return templateContent.replace(reportSectionTemplate, sb.toString());
 	}
 
 	private String getReportBody(ReportModel reportModel) {
+		String reportSectionContent = getReportTemplate(reportSectionHolder,
+				reportSectionTemplate, 1);
+
 		String headField = getFeild(reportModel.getFields());
 		String tableHeader = getHeader(reportModel.getHeaders());
 		String tableContent = getTableContent(reportModel.getBodys());
 
-		return null;
+		return reportSectionContent.replace(headFieldTemplate, headField)
+				.replace(tableHeadRowTemplate, tableHeader)
+				.replace(contentRowTemplate, tableContent);
 	}
 
 	private String getFeild(Map<String, String> fields) {
@@ -108,7 +113,6 @@ public class ReportFormatter {
 					field.getKey()).replaceAll(fieldValueHolder,
 					field.getValue()));
 		}
-
 		return headFields.toString();
 	}
 
@@ -121,26 +125,34 @@ public class ReportFormatter {
 		for (String str : list) {
 			header.append(tableHeadCellContent.replace(columnNameHolder, str));
 		}
-		
-		return headerRowContent.replace(tableHeadCellTemplate, header.toString());
+		return headerRowContent.replace(tableHeadCellTemplate,
+				header.toString());
 	}
 
 	private String getTableContent(List<List<ReportCell>> list) {
 		String tableRowContent = getReportTemplate(tableContentRowHolder,
 				contentRowTemplate, 1);
-		
 		StringBuffer tableContent = new StringBuffer();
-		
-		
+		for (List<ReportCell> cellList : list) {
+			String rowCells = getTableRowCells(cellList);
+			tableContent.append(tableRowContent.replace(contentCellTemplate,
+					rowCells));
+		}
+
 		return tableContent.toString();
 	}
 
-	private String getTableRow(List<ReportCell> cellList) {
+	private String getTableRowCells(List<ReportCell> cellList) {
 		StringBuffer tableRow = new StringBuffer();
 		String tableCellContent = getReportTemplate(tableContentCellHolder,
 				contentCellTemplate, 1);
-		
-		
+		for (ReportCell cell : cellList) {
+			tableRow.append(tableCellContent
+					.replace(tdAttrHolder, cell.getTdAttrs())
+					.replace(cellAttrHolder, cell.getCellAAttrs())
+					.replace(cellValueHolder, cell.getCellValue()));
+		}
+
 		return tableRow.toString();
 	}
 

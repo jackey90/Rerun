@@ -32,8 +32,8 @@ public class RerunFeedBack implements IFeedBack {
 		List<ReportModel> report = toReportModel(finalResult);
 		ReportFormatter formatReport = new ReportFormatter(
 				report);
-		formatReport.formatReport();
-		System.out.println();
+		String reportMessage =  formatReport.formatReport();
+		System.out.println(reportMessage);
 	}
 
 	private List<ReportModel> toReportModel(
