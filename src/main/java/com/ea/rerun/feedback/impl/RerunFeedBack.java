@@ -1,10 +1,14 @@
 package com.ea.rerun.feedback.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.common.util.ReportFormatter;
@@ -33,6 +37,16 @@ public class RerunFeedBack implements IFeedBack {
 		ReportFormatter formatReport = new ReportFormatter(
 				report);
 		String reportMessage =  formatReport.formatReport();
+		try {
+			File reportFile = new File("src\\main\\resources\\report.html");
+			String path = reportFile.getAbsolutePath();
+			if(!reportFile.exists()){
+				reportFile.createNewFile();
+			}
+			FileUtils.writeStringToFile(reportFile, reportMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println(reportMessage);
 	}
 
