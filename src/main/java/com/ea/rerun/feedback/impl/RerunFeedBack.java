@@ -19,6 +19,7 @@ import com.ea.rerun.feedback.model.ReportCell;
 import com.ea.rerun.feedback.model.ReportModel;
 import com.ea.rerun.feedback.model.RerunClassResult;
 import com.ea.rerun.feedback.model.RerunJobResult;
+import com.ea.rerun.getData.model.config.RerunConfig;
 
 /**
  * @author Jackey jaceky90.hj@gmail.com
@@ -29,6 +30,7 @@ import com.ea.rerun.feedback.model.RerunJobResult;
 public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
 	private String url = "";
+	private String reportPath;
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
 		InetAddress addr;
@@ -40,7 +42,8 @@ public class RerunFeedBack implements IFeedBack {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-
+		reportPath = RerunConfig.getInstance().getReportConfig()
+				.getReportOutPutPath();
 		this.finalResult = finalResult;
 	}
 
@@ -49,8 +52,8 @@ public class RerunFeedBack implements IFeedBack {
 		ReportFormatter formatReport = new ReportFormatter(report);
 		String reportMessage = formatReport.formatReport();
 		try {
-			File reportFile = new File("src\\main\\resources\\report.html");
-			String path = reportFile.getAbsolutePath();
+			File reportFile = new File(reportPath);
+
 			if (!reportFile.exists()) {
 				reportFile.createNewFile();
 			}

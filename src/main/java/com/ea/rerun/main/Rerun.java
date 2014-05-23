@@ -1,8 +1,6 @@
 package com.ea.rerun.main;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +11,6 @@ import com.ea.rerun.analyse.model.MavenRerunTestCase;
 import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.impl.RerunFeedBack;
-import com.ea.rerun.feedback.model.ReportCell;
-import com.ea.rerun.feedback.model.ReportModel;
 import com.ea.rerun.feedback.model.RerunClassResult;
 import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.IGetData;
@@ -96,18 +92,18 @@ public class Rerun {
 			for (Map.Entry<String, RerunJobResult> jobEntry : finalEntry
 					.getValue().entrySet()) {
 				RerunJobResult jobResult = jobEntry.getValue();
-				System.out.println("jobjobjobjobjob    "
+				System.out.println("job    "
 						+ jobResult.getJobName());
 				for (Map.Entry<String, RerunClassResult> classEntry : jobResult
 						.getClassResults().entrySet()) {
-					System.out.println("ClassClassClassClassClass    "
+					System.out.println("Class    "
 							+ classEntry.getKey());
 					for (Map.Entry<String, List<TestCase>> caseEntry : classEntry
 							.getValue().getFailureCatagory().entrySet()) {
-						System.out.println(caseEntry.getKey());
+						System.out.println("failureCatagory       " +caseEntry.getKey());
 						for (TestCase testCase : caseEntry.getValue()) {
 							System.out
-									.println("testCasetestCasetestCasetestCase     "
+									.println("testCase    "
 											+ testCase.toString());
 						}
 					}
