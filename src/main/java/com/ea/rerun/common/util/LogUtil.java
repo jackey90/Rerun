@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
@@ -39,7 +41,6 @@ public class LogUtil {
 	}
 
 	private static void deleteDayBefore(int daysToKeep) {
-
 	}
 
 	private static void copyReportAll(TestCase test, File orgReport) {
@@ -49,10 +50,8 @@ public class LogUtil {
 		File desReportDir = new File(logConfig.getLogPath() + "\\"
 				+ test.getBranch() + "\\" + test.getPack() + "\\"
 				+ test.getClassName());
-		
 		try {
-			
-			if(!desReportDir.exists()){
+			if (!desReportDir.exists()) {
 				FileUtils.forceMkdir(desReportDir);
 			}
 			int byteread = 0;
