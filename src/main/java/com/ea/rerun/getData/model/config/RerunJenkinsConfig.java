@@ -68,6 +68,7 @@ public class RerunJenkinsConfig extends XMLAnalyser {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, List<String>> generateViews() {
 		if (doc != null) {
 			List<Node> viewNodeList = doc

@@ -59,7 +59,7 @@ public class TestResult {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			// startRunCommand(test);
+			startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -86,7 +86,7 @@ public class TestResult {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
 					if (report.getName().equals(reportName)) {
-						copyReport(test, report);
+						//copyReport(test, report);
 						analyseReport(report, test);
 					}
 				}

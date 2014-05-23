@@ -8,7 +8,7 @@
 				<jobNames>
 					<string>catalog-BVT</string>
 					<string>preferences-BVT</string>
-					<string>rating-BVT/string>
+					<string>rating-BVT</string>
 				</jobNames>
 			</listView>
 			<listView>
@@ -22,13 +22,15 @@
 		</views>
 	</jenkins>
 	<report>
-		
+		<ReportTemplatePath></ReportTemplatePath>
+		<ReportOutPutPath></ReportOutPutPath>
 	</report>
-	
+
 	<log>
+		<!-- KeepAll,KeepNone,KeepSuccess,KeepFailure -->
 		<keepLog></keepLog>
 		<daysToKeep>50</daysToKeep>
-		
+		<logPath></logPath>
 	</log>
 
 	<mail>

@@ -31,11 +31,11 @@ public class RerunReportConfig extends XMLAnalyser {
 		String result = getNodeString("/rerunConfig/report/ReportTemplatePath");
 		if (isNullOrEmpty(result)) {
 			warning("ReportTemplatePath not set, use default!");
-			result = RerunConfig.currentPath + "reportTemplate.xml";
+			result = RerunConfig.currentPath + "\\reportTemplate.xml";
 
 		}
 		if (!new File(result).exists()) {
-			result = "src\\main\\resources\\defaultReportTemplate.xml";
+			result = "..\\Rerun\\src\\main\\resources\\defaultReportTemplate.xml";
 		}
 
 		return result;
@@ -45,7 +45,7 @@ public class RerunReportConfig extends XMLAnalyser {
 		String result = getNodeString("/rerunConfig/report/ReportOutPutPath");
 		if (isNullOrEmpty(result)) {
 			warning("ReportOutPutPath not set, use default!");
-			result = RerunConfig.currentPath + "Result.html";
+			result = RerunConfig.currentPath + "\\Result.html";
 		}
 		return result;
 	}
