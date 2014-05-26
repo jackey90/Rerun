@@ -99,13 +99,10 @@ public class RerunFeedBack implements IFeedBack {
 	private List<String> getHeaders(boolean withBug) {
 		List<String> headers = new ArrayList<String>();
 		headers.add("Job");
-		headers.add("Performance");
 		headers.add("Class");
-		headers.add("Failure Catagory");
-		headers.add("Failed Number");
 		headers.add("TestCase");
 		headers.add("Rerun Time");
-		headers.add("Rerun Command");
+		headers.add("Failure Catagory");
 		if (withBug) {
 			headers.add("Bug");
 		}
@@ -123,10 +120,6 @@ public class RerunFeedBack implements IFeedBack {
 					+ jobResult.getAllCount() + "\"", "",
 					jobResult.getJobName());
 			jobTr.add(jobTd);
-			ReportCell performanceTd = new ReportCell("rowspan=\""
-					+ jobResult.getAllCount() + "\"", "",
-					getPerformance(jobResult));
-			jobTr.add(performanceTd);
 			Map<String, RerunClassResult> classResultMap = jobResult
 					.getClassResults();
 			// Iterator<RerunClassResult> classResultItr =
@@ -163,22 +156,6 @@ public class RerunFeedBack implements IFeedBack {
 
 					ReportCell failureCatagory = new ReportCell("rowspan=\""
 							+ cases.size() + "\"", "", errorSummary);
-					ReportCell failedNumber = new ReportCell("rowspan=\""
-							+ cases.size() + "\"", "", cases.size() + "");
-					if (classIndex == 1 && catagoryIndex == 1) {
-						jobTr.add(failureCatagory);
-						jobTr.add(failedNumber);
-					} else if (classIndex != 1 && catagoryIndex == 1) {
-						if (classTr != null) {
-							classTr.add(failureCatagory);
-							classTr.add(failedNumber);
-						}
-					} else if (catagoryIndex != 1) {
-						catagoryTr = new ArrayList<ReportCell>();
-						list.add(catagoryTr);
-						catagoryTr.add(failureCatagory);
-						catagoryTr.add(failedNumber);
-					}
 
 					int caseIndex = 0;
 					for (TestCase testCase : cases) {
@@ -190,35 +167,14 @@ public class RerunFeedBack implements IFeedBack {
 						ReportCell rerunTimes = new ReportCell("rowspan=\"" + 1
 								+ "\"", "", testCase.getResult().getRunCount()
 								+ "");
-						if (classIndex == 1 && catagoryIndex == 1
-								&& caseIndex == 1) {
+						if (classIndex == 1 && caseIndex == 1) {
 							jobTr.add(caseName);
 							jobTr.add(rerunTimes);
-							String mavenCommand = testCase.getMavenCommand();
-							String[] commandArray = mavenCommand
-									.split("-Dtest=");
-							ReportCell mvnCommand = new ReportCell("rowspan=\""
-									+ jobResult.getAllCount() + "\"", "",
-									commandArray[0]
-											+ " -Dtest={FailedTestCase}");
-							jobTr.add(mvnCommand);
-						} else if (classIndex == 1 && catagoryIndex != 1
-								&& caseIndex == 1) {
-							if (catagoryTr != null) {
-								catagoryTr.add(caseName);
-								catagoryTr.add(rerunTimes);
-							}
-						} else if (classIndex != 1 && catagoryIndex == 1
-								&& caseIndex == 1) {
+
+						} else if (classIndex != 1 && caseIndex == 1) {
 							if (classTr != null) {
 								classTr.add(caseName);
 								classTr.add(rerunTimes);
-							}
-						} else if (classIndex != 1 && catagoryIndex != 1
-								&& caseIndex == 1) {
-							if (catagoryTr != null) {
-								catagoryTr.add(caseName);
-								catagoryTr.add(rerunTimes);
 							}
 						} else if (caseIndex != 1) {
 							caseTr = new ArrayList<ReportCell>();
@@ -226,6 +182,18 @@ public class RerunFeedBack implements IFeedBack {
 							caseTr.add(caseName);
 							caseTr.add(rerunTimes);
 						}
+					}
+
+					if (classIndex == 1 && catagoryIndex == 1) {
+						jobTr.add(failureCatagory);
+					} else if (classIndex != 1 && catagoryIndex == 1) {
+						if (classTr != null) {
+							classTr.add(failureCatagory);
+						}
+					} else if (catagoryIndex != 1) {
+						catagoryTr = new ArrayList<ReportCell>();
+						list.add(catagoryTr);
+						catagoryTr.add(failureCatagory);
 					}
 				}
 
