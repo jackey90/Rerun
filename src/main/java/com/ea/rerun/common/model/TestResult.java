@@ -51,7 +51,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = -1; i >= 0; i--) {
+				for (int i = 3; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);
@@ -81,12 +81,12 @@ public class TestResult {
 					+ "\\target\\surefire-reports\\junitreports";
 			File juniteReportDir = new File(juinitreportsPath);
 			String reportName = "TEST-" + test.getPack() + "."
-					+ test.getClassName() + ".xml";
+					+ test.getClassName() + ".xml";  
 			if (juniteReportDir.exists() && juniteReportDir.isDirectory()) {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
 					if (report.getName().equals(reportName)) {
-						//copyReport(test, report);
+						// copyReport(test, report);
 						analyseReport(report, test);
 					}
 				}
@@ -123,10 +123,10 @@ public class TestResult {
 	}
 
 	private void addError(Node caseNode, Test test) {
-		String durationTimeStr = caseNode.valueOf("@time");
+		String durationTimeStr = caseNode.valueOf("@time").trim();
 		Node childNode = (Node) caseNode.selectNodes(".//*").get(0);
-		String errorDetails = childNode.valueOf("@type");
-		String errorStackTrace = childNode.getText();
+		String errorDetails = childNode.valueOf("@type").trim();
+		String errorStackTrace = childNode.getText().trim();
 		this.errorDetails = errorDetails;
 		this.errorStackTrace = errorStackTrace;
 		this.durationTime = new BigDecimal(durationTimeStr);
@@ -137,10 +137,10 @@ public class TestResult {
 	}
 
 	private void addFailure(Node caseNode, Test test) {
-		String durationTimeStr = caseNode.valueOf("@time");
+		String durationTimeStr = caseNode.valueOf("@time").trim();
 		Node childNode = (Node) caseNode.selectNodes(".//*").get(0);
-		String errorDetails = childNode.valueOf("@type");
-		String errorStackTrace = childNode.getText();
+		String errorDetails = childNode.valueOf("@type").trim();
+		String errorStackTrace = childNode.getText().trim();
 		this.errorDetails = errorDetails;
 		this.errorStackTrace = errorStackTrace;
 		this.durationTime = new BigDecimal(durationTimeStr);
@@ -151,7 +151,7 @@ public class TestResult {
 	}
 
 	private void addSuccess(Node caseNode, Test test) {
-		String durationTimeStr = caseNode.valueOf("@time");
+		String durationTimeStr = caseNode.valueOf("@time").trim();
 		this.durationTime = new BigDecimal(durationTimeStr);
 		TestSuccess success = new TestSuccess(test, null, runCount,
 				new BigDecimal(durationTimeStr));
@@ -270,10 +270,13 @@ public class TestResult {
 			return "<b>ERROR DETAILS:</b><br>"
 					+ errorDetails
 					+ "<br><b>ERROR STACK TRACE:</b><br>"
-					+ (errorStackTrace.length() <= 300 ? errorStackTrace
-							: errorStackTrace.substring(0, 300));
-		case Successed:
+					+ (errorStackTrace.length() <= 400 ? errorStackTrace
+							: errorStackTrace.substring(0,
+									errorStackTrace.length() / 2)
+									+ "...");
 		case Skiped:
+			return "Skiped";
+		case Successed:
 		default:
 			return "Success";
 		}

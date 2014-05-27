@@ -80,7 +80,7 @@ public class RerunJenkinsConfig extends XMLAnalyser {
 					Node nameNode = viewNode.selectSingleNode("name");
 					if (nameNode != null) {
 						List<Node> jobNamesStringNodes = viewNode
-								.selectNodes("//jobNames/string");
+								.selectNodes("jobNames/string");
 						if (jobNamesStringNodes != null
 								&& jobNamesStringNodes.size() > 0) {
 							List<String> stringList = new ArrayList<String>();
