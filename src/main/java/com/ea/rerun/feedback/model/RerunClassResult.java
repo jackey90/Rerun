@@ -8,15 +8,17 @@ import java.util.Map;
 import com.ea.rerun.common.model.TestCase;
 
 public class RerunClassResult {
+	private String branch;
 	private String className;
+
 	private Map<String, List<TestCase>> failureCatagory = new LinkedHashMap<String, List<TestCase>>();
 	private List<TestCase> cases = new ArrayList<TestCase>();
 
-	
-	public RerunClassResult(String className){
+	public RerunClassResult(String branch, String className) {
+		this.branch = branch;
 		this.className = className;
 	}
-	
+
 	public void addToCatagory(TestCase testCase) {
 		cases.add(testCase);
 		String category = testCase.getResult().getFailureSummary();
@@ -33,8 +35,8 @@ public class RerunClassResult {
 			failureCatagory.put(category, caseList);
 		}
 	}
-	
-	public int getCount(){
+
+	public int getCount() {
 		return cases.size();
 	}
 
@@ -60,6 +62,14 @@ public class RerunClassResult {
 
 	public void setCases(List<TestCase> cases) {
 		this.cases = cases;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
 	}
 
 }

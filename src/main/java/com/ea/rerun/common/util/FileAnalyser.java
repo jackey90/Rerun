@@ -3,8 +3,15 @@ package com.ea.rerun.common.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * @author Jackey jaceky90.hj@gmail.com
+ * @Date May 28, 2014
+ * 
+ *       read or write operation to a file
+ */
 public class FileAnalyser {
 	private final File file;
 
@@ -36,10 +43,33 @@ public class FileAnalyser {
 				try {
 					reader.close();
 				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		}
 		return null;
+	}
+
+	public boolean write(String str) {
+		boolean result = true;
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(file);
+			fw.write(str);
+		} catch (IOException e) {
+			result = false;
+			e.printStackTrace();
+		} finally {
+			if (fw != null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;
 	}
 
 }

@@ -24,6 +24,7 @@ public class TestResult {
 	private String errorStackTrace;
 	private String stdout;
 	private BigDecimal durationTime;
+	private int buildCount;
 
 	public TestResult() {
 		runCount = 0;
@@ -37,6 +38,7 @@ public class TestResult {
 		errorStackTrace = "";
 		stdout = "";
 		durationTime = BigDecimal.ZERO;
+		buildCount = 1;
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class TestResult {
 			runCount++;
 			PrintUtil.info(runCount + "times : " + test.toString());
 			try {
-				for (int i = 3; i >= 0; i--) {
+				for (int i = -1; i >= 0; i--) {
 					System.out.println("*********************   " + i
 							+ " ***************************");
 					Thread.sleep(1000);
@@ -59,7 +61,7 @@ public class TestResult {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			startRunCommand(test);
+			// startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -81,15 +83,17 @@ public class TestResult {
 					+ "\\target\\surefire-reports\\junitreports";
 			File juniteReportDir = new File(juinitreportsPath);
 			String reportName = "TEST-" + test.getPack() + "."
-					+ test.getClassName() + ".xml";  
+					+ test.getClassName() + ".xml";
 			if (juniteReportDir.exists() && juniteReportDir.isDirectory()) {
 				File[] reports = juniteReportDir.listFiles();
 				for (File report : reports) {
 					if (report.getName().equals(reportName)) {
-						// copyReport(test, report);
+						copyReport(test, report);
 						analyseReport(report, test);
 					}
 				}
+			} else {
+
 			}
 		} else {
 			PrintUtil.error("Can not find the pomPath!");
@@ -260,6 +264,14 @@ public class TestResult {
 
 	public List<TestFailure> getErrors() {
 		return errors;
+	}
+
+	public int getBuildCount() {
+		return buildCount;
+	}
+
+	public void setBuildCount(int buildCount) {
+		this.buildCount = buildCount;
 	}
 
 	public String getFailureSummary() {

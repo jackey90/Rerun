@@ -10,9 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.bcel.util.ClassPath;
 import org.apache.commons.io.FileUtils;
+import org.apache.regexp.REProgram;
 
 import com.ea.rerun.common.model.TestCase;
+import com.ea.rerun.common.util.PrintUtil;
 import com.ea.rerun.common.util.ReportFormatter;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.model.ReportCell;
@@ -31,6 +34,8 @@ public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
 	private String url = "";
 	private String reportPath;
+	private String logPath;
+	private String reportDir;
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
 		InetAddress addr;
@@ -44,24 +49,14 @@ public class RerunFeedBack implements IFeedBack {
 		}
 		reportPath = RerunConfig.getInstance().getReportConfig()
 				.getReportOutPutPath();
+		reportDir = reportPath.substring(0, reportPath.lastIndexOf("\\"));
+		logPath = RerunConfig.getInstance().getLogConfig().getLogPath();
 		this.finalResult = finalResult;
 	}
 
 	public void feedBack() {
 		List<ReportModel> report = toReportModel(finalResult);
-		ReportFormatter formatReport = new ReportFormatter(report);
-		String reportMessage = formatReport.formatReport();
-		try {
-			File reportFile = new File(reportPath);
-
-			if (!reportFile.exists()) {
-				reportFile.createNewFile();
-			}
-			FileUtils.writeStringToFile(reportFile, reportMessage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println(reportMessage);
+		reportModel2Report(report, reportPath);
 	}
 
 	private List<ReportModel> toReportModel(
@@ -100,12 +95,6 @@ public class RerunFeedBack implements IFeedBack {
 		List<String> headers = new ArrayList<String>();
 		headers.add("Job");
 		headers.add("Class");
-		headers.add("TestCase");
-		headers.add("Rerun Time");
-		headers.add("Failure Catagory");
-		if (withBug) {
-			headers.add("Bug");
-		}
 
 		return headers;
 	}
@@ -133,8 +122,9 @@ public class RerunFeedBack implements IFeedBack {
 				RerunClassResult classResult = classResultEntry.getValue();
 
 				ReportCell classNameTd = new ReportCell("rowspan=\""
-						+ classResult.getCount() + "\"", "",
-						classResult.getClassName());
+						+ classResult.getCount() + "\"", "href=\""
+						+ classResult.getClassName() + ".html"
+						+ "\" target=\"details\"", classResult.getClassName());
 				if (classIndex == 1) {
 					jobTr.add(classNameTd);
 				} else {
@@ -143,59 +133,66 @@ public class RerunFeedBack implements IFeedBack {
 					classTr.add(classNameTd);
 				}
 
-				Map<String, List<TestCase>> failureCatagoryMap = classResult
-						.getFailureCatagory();
-				int catagoryIndex = 0;
-				for (Map.Entry<String, List<TestCase>> catagoryEntry : failureCatagoryMap
-						.entrySet()) {
-					catagoryIndex++;
-					List<ReportCell> catagoryTr = null;
+				classResult2Report(classResult);
 
-					String errorSummary = catagoryEntry.getKey();
-					List<TestCase> cases = catagoryEntry.getValue();
-
-					ReportCell failureCatagory = new ReportCell("rowspan=\""
-							+ cases.size() + "\"", "", errorSummary);
-
-					int caseIndex = 0;
-					for (TestCase testCase : cases) {
-						caseIndex++;
-						List<ReportCell> caseTr = null;
-
-						ReportCell caseName = new ReportCell("rowspan=\"" + 1
-								+ "\"", "", testCase.getTestName());
-						ReportCell rerunTimes = new ReportCell("rowspan=\"" + 1
-								+ "\"", "", testCase.getResult().getRunCount()
-								+ "");
-						if (classIndex == 1 && caseIndex == 1) {
-							jobTr.add(caseName);
-							jobTr.add(rerunTimes);
-
-						} else if (classIndex != 1 && caseIndex == 1) {
-							if (classTr != null) {
-								classTr.add(caseName);
-								classTr.add(rerunTimes);
-							}
-						} else if (caseIndex != 1) {
-							caseTr = new ArrayList<ReportCell>();
-							list.add(caseTr);
-							caseTr.add(caseName);
-							caseTr.add(rerunTimes);
-						}
-					}
-
-					if (classIndex == 1 && catagoryIndex == 1) {
-						jobTr.add(failureCatagory);
-					} else if (classIndex != 1 && catagoryIndex == 1) {
-						if (classTr != null) {
-							classTr.add(failureCatagory);
-						}
-					} else if (catagoryIndex != 1) {
-						catagoryTr = new ArrayList<ReportCell>();
-						list.add(catagoryTr);
-						catagoryTr.add(failureCatagory);
-					}
-				}
+				// Map<String, List<TestCase>> failureCatagoryMap = classResult
+				// .getFailureCatagory();
+				// int catagoryIndex = 0;
+				// for (Map.Entry<String, List<TestCase>> catagoryEntry :
+				// failureCatagoryMap
+				// .entrySet()) {
+				// catagoryIndex++;
+				// List<ReportCell> catagoryTr = null;
+				//
+				// String errorSummary = catagoryEntry.getKey();
+				// List<TestCase> cases = catagoryEntry.getValue();
+				//
+				// ReportCell failureCatagory = new ReportCell("rowspan=\""
+				// + cases.size() + "\"", "", errorSummary);
+				//
+				// int caseIndex = 0;
+				// for (TestCase testCase : cases) {
+				// caseIndex++;
+				// List<ReportCell> caseTr = null;
+				// String caseLogPath = classLogPath + "\\"
+				// + testCase.getTestName() + "\\builds\\"
+				// + testCase.getResult().getBuildCount();
+				//
+				// ReportCell caseName = new ReportCell("rowspan=\"" + 1
+				// + "\"", "target=\"_blank\" href=\""
+				// + caseLogPath + "\"", testCase.getTestName());
+				// ReportCell rerunTimes = new ReportCell("rowspan=\"" + 1
+				// + "\"", "", testCase.getResult().getRunCount()
+				// + "");
+				// if (classIndex == 1 && caseIndex == 1) {
+				// jobTr.add(caseName);
+				// jobTr.add(rerunTimes);
+				//
+				// } else if (classIndex != 1 && caseIndex == 1) {
+				// if (classTr != null) {
+				// classTr.add(caseName);
+				// classTr.add(rerunTimes);
+				// }
+				// } else if (caseIndex != 1) {
+				// caseTr = new ArrayList<ReportCell>();
+				// list.add(caseTr);
+				// caseTr.add(caseName);
+				// caseTr.add(rerunTimes);
+				// }
+				// }
+				//
+				// if (classIndex == 1 && catagoryIndex == 1) {
+				// jobTr.add(failureCatagory);
+				// } else if (classIndex != 1 && catagoryIndex == 1) {
+				// if (classTr != null) {
+				// classTr.add(failureCatagory);
+				// }
+				// } else if (catagoryIndex != 1) {
+				// catagoryTr = new ArrayList<ReportCell>();
+				// list.add(catagoryTr);
+				// catagoryTr.add(failureCatagory);
+				// }
+				// }
 
 			}
 			return list;
@@ -213,6 +210,72 @@ public class RerunFeedBack implements IFeedBack {
 					+ jobResult.getSuccessCount();
 		}
 		return null;
+	}
+
+	private void classResult2Report(RerunClassResult classResult) {
+		List<ReportModel> list = classResult2ReportModel(classResult);
+		reportModel2Report(list, reportDir + "\\" + classResult.getClassName()
+				+ ".html");
+	}
+
+	private List<ReportModel> classResult2ReportModel(
+			RerunClassResult classResult) {
+		if (classResult != null) {
+			List<ReportModel> reportModels = new ArrayList<ReportModel>();
+			Map<String, List<TestCase>> failureCatagory = classResult
+					.getFailureCatagory();
+			ReportModel model = new ReportModel();
+
+			List<String> headers = new ArrayList<String>();
+			headers.add("TestCase");
+			headers.add("Rerun Times");
+			model.setHeaders(headers);
+			List<List<ReportCell>> bodys = new ArrayList<List<ReportCell>>();
+			for (Map.Entry<String, List<TestCase>> catagoryEntry : failureCatagory
+					.entrySet()) {
+				List<TestCase> caseList = catagoryEntry.getValue();
+				for (TestCase testCase : caseList) {
+					List<ReportCell> caseAndRerunTimesTr = new ArrayList<ReportCell>();
+					ReportCell caseTd = new ReportCell("", "",
+							testCase.getTestName());
+					ReportCell rerunTimesTd = new ReportCell("", "", testCase
+							.getResult().getRunCount() + "");
+					caseAndRerunTimesTr.add(caseTd);
+					caseAndRerunTimesTr.add(rerunTimesTd);
+					bodys.add(caseAndRerunTimesTr);
+				}
+				String errorMsg = catagoryEntry.getKey();
+				List<ReportCell> errorMsgTr = new ArrayList<ReportCell>();
+				ReportCell errorMsgTd = new ReportCell("colspan=\"2\"", "",
+						errorMsg);
+				errorMsgTr.add(errorMsgTd);
+				bodys.add(errorMsgTr);
+			}
+			model.setBodys(bodys);
+			reportModels.add(model);
+			return reportModels;
+		}
+		return null;
+	}
+
+	private void reportModel2Report(List<ReportModel> reportModelList,
+			String reportOutputPath) {
+		ReportFormatter formatReport = new ReportFormatter(reportModelList);
+		String reportMessage = formatReport.formatReport();
+		writeStringToFile(reportMessage, reportOutputPath);
+	}
+
+	private void writeStringToFile(String reportMessage, String reportOutputPath) {
+		try {
+			File reportFile = new File(reportOutputPath);
+			if (!reportFile.exists()) {
+				reportFile.createNewFile();
+			}
+			FileUtils.writeStringToFile(reportFile, reportMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		PrintUtil.info("Success to generate report :" + reportOutputPath);
 	}
 
 }

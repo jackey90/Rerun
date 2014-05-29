@@ -20,7 +20,7 @@ public class TestMavenUtil {
 	public void testRunList() {
 		List<String> list = new ArrayList<String>();
 		list.add("mvn -B -f D:\\Users\\jinhuang\\EASAP\\nucleus\\NNG\\rating-integration\\pom.xml -U clean test -P BVT -Dtest.universe=onebox -Dtest=com.ea.eadp.rating.integration.testcase.cartRating.TestShippingRating#testScenario_shippingPromotionNotInEffectiveDate");
-		//list.add("mvn -B -f D:\\Users\\jinhuang\\EASAP\\nucleus\\NNG\\rating-integration\\pom.xml clean test -P BVT -Dtest.universe=onebox -Dtest=com.ea.nucleus.preferences.emailaddresses.TestEmailAddressPostAndGet#testNotificationOnPost");
+		//list.add("mvn -B -f D:\\Users\\jin    huang\\EASAP\\nucleus\\NNG\\rating-integration\\pom.xml clean test -P BVT -Dtest.universe=onebox -Dtest=com.ea.nucleus.preferences.emailaddresses.TestEmailAddressPostAndGet#testNotificationOnPost");
 		MavenUtil.run(list);
 	}
 

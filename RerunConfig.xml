@@ -1,27 +1,23 @@
 <rerunConfig>
 	<jenkins>
 		<jenkinsURL>http://eashdpdesk161.aaa.ad.ea.com:8080</jenkinsURL>
-		<jenkinsFolder>D:\Jenkins\.jenkins</jenkinsFolder>
+		<jenkinsFolder>C:\Program Files (x86)\Jenkins</jenkinsFolder>
 		<views>
 			<listView>
 				<name>BVT</name>
 			</listView>
-			<listView>
+			<!--<listView>
 				<name>Comprehensive</name>
 				<jobNames>
 					<string>commerce-Comprehensive</string>
 				</jobNames>
-			</listView>
+			</listView>-->
 		</views>
 	</jenkins>
-	<report>
-
-	</report>
-
+	
 	<log>
 		<keepLog></keepLog>
 		<daysToKeep>50</daysToKeep>
-		
 	</log>
 
 	<mail>

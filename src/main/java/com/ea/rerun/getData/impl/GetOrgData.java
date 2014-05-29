@@ -68,6 +68,7 @@ public class GetOrgData implements IGetData {
 		} else {
 			for (Map.Entry<String, List<String>> rerunViewEntry : rerunViews
 					.entrySet()) {
+
 				if (jenKinsViews.containsKey(rerunViewEntry.getKey())) {
 					List<String> rerunNames = rerunViewEntry.getValue();
 					List<String> jenKinsNames = jenKinsViews.get(rerunViewEntry
@@ -127,8 +128,8 @@ public class GetOrgData implements IGetData {
 						for (int i = 1; i < tempArray.length; i++) {
 							realPom += "\\" + tempArray[i];
 						}
-						//realPom = realPom.replaceAll("\\\\", "\\\\\\\\");
-						
+						// realPom = realPom.replaceAll("\\\\", "\\\\\\\\");
+
 						jenkinsJob.setGoals(goals);
 						jenkinsJob.setJobName(jobName);
 						jenkinsJob.setPomPath(realPom);
@@ -222,8 +223,14 @@ public class GetOrgData implements IGetData {
 			}
 			unitResult.setBuildNumber(lastBuildFolderNumber);
 
-			XMLAnalyser juniteAnalyer = new XMLAnalyser(new File(
-					lastBuildFolderPath + "\\junitResult.xml"));
+			File junitResultXml = new File(lastBuildFolderPath
+					+ "\\junitResult.xml");
+			if (!junitResultXml.exists()) {
+				unitResult.setSuites(new ArrayList<JenkinsJunitResultSuite>());
+				return unitResult;
+			}
+
+			XMLAnalyser juniteAnalyer = new XMLAnalyser(junitResultXml);
 			String durationStr = juniteAnalyer
 					.getNodeString("//result/duration");
 			unitResult.setTotalDuration(new BigDecimal(durationStr.trim()));

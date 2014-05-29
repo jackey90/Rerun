@@ -3,6 +3,7 @@ package com.ea.rerun.common.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import com.ea.rerun.getData.model.config.RerunLogConfig;
 
 public class LogUtil {
 	private static RerunLogConfig logConfig = RerunConfig.getInstance()
-			.getLogConfig();;
+			.getLogConfig();
 
 	public static void copyReport(TestCase testCase, File orgReport) {
 		String logPath = logConfig.getLogPath();
@@ -41,19 +42,25 @@ public class LogUtil {
 	}
 
 	private static void deleteDayBefore(int daysToKeep) {
+
 	}
 
 	private static void copyReportAll(TestCase test, File orgReport) {
-		File desReport = new File(logConfig.getLogPath() + "\\"
-				+ test.getBranch() + "\\" + test.getPack() + "\\"
-				+ test.getClassName() + "\\" + test.getTestName() + ".xml");
 		File desReportDir = new File(logConfig.getLogPath() + "\\"
-				+ test.getBranch() + "\\" + test.getPack() + "\\"
-				+ test.getClassName());
+				+ test.getBranch() + "\\" + test.getPack() + "."
+				+ test.getClassName() + "\\" + test.getTestName() + "\\builds");
+		File desReport = null;
 		try {
 			if (!desReportDir.exists()) {
 				FileUtils.forceMkdir(desReportDir);
 			}
+			int nextNumber = getNextBuildNumber(desReportDir);
+			String reportDir = desReportDir.getAbsolutePath() + "\\"
+					+ nextNumber;
+			FileUtils.forceMkdir(new File(reportDir));
+
+			desReport = new File(reportDir + "\\" + test.getTestName() + ".xml");
+			desReport.createNewFile();
 			int byteread = 0;
 			if (orgReport.exists()) {
 
@@ -68,10 +75,62 @@ public class LogUtil {
 				}
 				fs.close();
 				inStream.close();
+
+				// increase the nextNumber
+				File nextNumberFile = new File(desReportDir.getAbsolutePath()
+						+ "\\nextNumber");
+				FileAnalyser analyser = new FileAnalyser(nextNumberFile);
+				analyser.write(nextNumber + 1 + "");
+
+				test.getResult().setBuildCount(nextNumber);
 			}
 		} catch (Exception e) {
-			PrintUtil.warning("Fail to generate report " + desReport.getName());
+			PrintUtil.warning("Fail to generate report !");
 			e.printStackTrace();
 		}
+	}
+
+	private static int getNextBuildNumber(File desReportDir) {
+		FileAnalyser analyser = null;
+		File nextNumberFile = new File(desReportDir.getAbsolutePath()
+				+ "\\nextNumber");
+		if (!desReportDir.exists()) {
+			try {
+				FileUtils.forceMkdir(desReportDir);
+				if (!nextNumberFile.createNewFile()) {
+					PrintUtil.error("Failure to create nextNumber file!");
+				} else {
+					analyser = new FileAnalyser(nextNumberFile);
+					analyser.write("1");
+					return 1;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (analyser == null) {
+			if (!nextNumberFile.exists()) {
+				try {
+					if (!nextNumberFile.createNewFile()) {
+						PrintUtil.error("Failure to create nextNumber file!");
+					} else {
+						analyser = new FileAnalyser(nextNumberFile);
+						analyser.write("1");
+						return 1;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			analyser = new FileAnalyser(nextNumberFile);
+		}
+
+		String nextNoStr = analyser.readLine(1);
+		if (nextNoStr == null) {
+			PrintUtil.error("Nothing in the file nextNumber");
+		}
+		return Integer.parseInt(nextNoStr.trim());
+
 	}
 }
