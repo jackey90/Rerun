@@ -3,15 +3,15 @@
 		<jenkinsURL>http://eashdpdesk161.aaa.ad.ea.com:8080</jenkinsURL>
 		<jenkinsFolder>C:\Program Files (x86)\Jenkins</jenkinsFolder>
 		<views>
-			<listView>
-				<name>BVT</name>
-			</listView>
 			<!--<listView>
-				<name>Comprehensive</name>
-				<jobNames>
-					<string>commerce-Comprehensive</string>
-				</jobNames>
+				<name>BVT</name>
 			</listView>-->
+			<listView>
+				<name>Comprehensive</name>
+				<!--<jobNames>
+					<string>commerce-Comprehensive</string>
+				</jobNames>-->
+			</listView>
 		</views>
 	</jenkins>
 	

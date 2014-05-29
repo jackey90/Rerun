@@ -32,22 +32,22 @@ import com.ea.rerun.getData.model.config.RerunConfig;
  */
 public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
-	private String url = "";
-	private String reportPath;
+	// private String url = "";
+	// private String reportPath;
 	private String logPath;
 	private String reportDir;
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
-		InetAddress addr;
-		try {
-			addr = InetAddress.getLocalHost();
-			String address = addr.getHostAddress();
-			url = "<a" + "http://" + address + ":8080" + ">" + "http://"
-					+ address + ":8080" + "</a>";
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		reportPath = RerunConfig.getInstance().getReportConfig()
+		// InetAddress addr;
+		// try {
+		// addr = InetAddress.getLocalHost();
+		// String address = addr.getHostAddress();
+		// url = "<a" + "http://" + address + ":8080" + ">" + "http://"
+		// + address + ":8080" + "</a>";
+		// } catch (UnknownHostException e) {
+		// e.printStackTrace();
+		// }
+		String reportPath = RerunConfig.getInstance().getReportConfig()
 				.getReportOutPutPath();
 		reportDir = reportPath.substring(0, reportPath.lastIndexOf("\\"));
 		logPath = RerunConfig.getInstance().getLogConfig().getLogPath();
@@ -55,8 +55,29 @@ public class RerunFeedBack implements IFeedBack {
 	}
 
 	public void feedBack() {
-		List<ReportModel> report = toReportModel(finalResult);
-		reportModel2Report(report, reportPath);
+		List<ReportModel> classReport = toReportModel(finalResult);
+		reportModel2Report(classReport, reportDir + "\\class.html");
+		File result = new File("Result.html");
+		File temphtml = new File("temp.html");
+		if (!result.exists()) {
+			try {
+				result.createNewFile();
+				FileUtils.copyFile(
+						new File("src\\main\\resources\\Result.html"), result);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!temphtml.exists()) {
+			try {
+				temphtml.createNewFile();
+				FileUtils.copyFile(new File("src\\main\\resources\\temp.html"),
+						temphtml);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private List<ReportModel> toReportModel(
@@ -68,11 +89,12 @@ public class RerunFeedBack implements IFeedBack {
 				String viewName = viewEntry.getKey();
 				Map<String, RerunJobResult> jobResultMap = viewEntry.getValue();
 				ReportModel reportModel = new ReportModel();
-				Map<String, String> fields = new LinkedHashMap<String, String>();
-				fields.put("Title : ", viewName);
-				fields.put("URL : ", url);
-				fields.put("Report Date: ", new Date().toString());
-				reportModel.setFields(fields);
+				// Map<String, String> fields = new LinkedHashMap<String,
+				// String>();
+				// fields.put("Title : ", viewName);
+				// fields.put("URL : ", url);
+				// fields.put("Report Date: ", new Date().toString());
+				// reportModel.setFields(fields);
 				List<String> headers = getHeaders(false);
 				reportModel.setHeaders(headers);
 				List<List<ReportCell>> bodys = new ArrayList<List<ReportCell>>();
@@ -103,14 +125,14 @@ public class RerunFeedBack implements IFeedBack {
 			boolean withBug) {
 		if (jobResult != null) {
 			List<List<ReportCell>> list = new ArrayList<List<ReportCell>>();
+			Map<String, RerunClassResult> classResultMap = jobResult
+					.getClassResults();
 			List<ReportCell> jobTr = new ArrayList<ReportCell>();
 			list.add(jobTr);
 			ReportCell jobTd = new ReportCell("rowspan=\""
-					+ jobResult.getAllCount() + "\"", "",
-					jobResult.getJobName());
+					+ classResultMap.size() + "\"", "", jobResult.getJobName());
 			jobTr.add(jobTd);
-			Map<String, RerunClassResult> classResultMap = jobResult
-					.getClassResults();
+
 			// Iterator<RerunClassResult> classResultItr =
 			// classResultMap.values().iterator();
 			// RerunClassResult firestClassResult = classResultItr.next();
@@ -121,10 +143,11 @@ public class RerunFeedBack implements IFeedBack {
 				List<ReportCell> classTr = null;
 				RerunClassResult classResult = classResultEntry.getValue();
 
-				ReportCell classNameTd = new ReportCell("rowspan=\""
-						+ classResult.getCount() + "\"", "href=\""
-						+ classResult.getClassName() + ".html"
-						+ "\" target=\"details\"", classResult.getClassName());
+				ReportCell classNameTd = new ReportCell(
+						"rowspan=\"" + 1 + "\"", "href=\""
+								+ classResult.getClassName() + ".html"
+								+ "\" target=\"details\"",
+						classResult.getClassName());
 				if (classIndex == 1) {
 					jobTr.add(classNameTd);
 				} else {

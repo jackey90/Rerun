@@ -279,13 +279,12 @@ public class TestResult {
 		case Error:
 		case Stable_Failed:
 		case UnStable_Failed:
-			return "<b>ERROR DETAILS:</b><br>"
-					+ errorDetails
-					+ "<br><b>ERROR STACK TRACE:</b><br>"
-					+ (errorStackTrace.length() <= 400 ? errorStackTrace
-							: errorStackTrace.substring(0,
-									errorStackTrace.length() / 2)
-									+ "...");
+			return "<b>ERROR DETAILS:</b><br>" + errorDetails
+					+ "<br><br><b>ERROR STACK TRACE:</b><br>" + errorStackTrace;
+			// + (errorStackTrace.length() <= 400 ? errorStackTrace
+			// : errorStackTrace.substring(0,
+			// errorStackTrace.length() / 2)
+			// + "...");
 		case Skiped:
 			return "Skiped";
 		case Successed:
