@@ -39,21 +39,20 @@ public class Rerun {
 	public static void main(String[] args) {
 		Rerun r = new Rerun();
 		JenkinsTestResult result = r.getJenkinsTestResult();
+		System.out.println(result.toString());
 		AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(result);
 		List<MavenRerunTestCase> list = an.getAnalyseData();
-		for (int i = 0; i < list.size(); i++) {
-			System.out.println(list.get(i).getTestCase().toString());
-		}
+
 		List<String> strList = new ArrayList<String>();
 		int i = 1;
 		Map<String, Map<String, RerunJobResult>> finalResult = new LinkedHashMap<String, Map<String, RerunJobResult>>();
 		// Map<String, List<TestCase>> map = new HashMap<String,
 		// List<TestCase>>();
 		for (MavenRerunTestCase cmd : list) {
-			System.out.println(cmd.getTestCase().toString());
-			System.out.println(cmd.getTestCase().getMavenCommand());
+			// System.out.println(cmd.getTestCase().toString());
+			// System.out.println(cmd.getTestCase().getMavenCommand());
 			cmd.getTestCase().run();
-
+			
 			if (finalResult.containsKey(cmd.getViewName())) {
 				Map<String, RerunJobResult> map = finalResult.get(cmd
 						.getViewName());
@@ -85,33 +84,6 @@ public class Rerun {
 			}
 		}
 
-		for (Map.Entry<String, Map<String, RerunJobResult>> finalEntry : finalResult
-				.entrySet()) {
-			System.out.println("**********************  " + finalEntry.getKey()
-					+ "  *****************");
-			for (Map.Entry<String, RerunJobResult> jobEntry : finalEntry
-					.getValue().entrySet()) {
-				RerunJobResult jobResult = jobEntry.getValue();
-				System.out.println("job    "
-						+ jobResult.getJobName());
-				for (Map.Entry<String, RerunClassResult> classEntry : jobResult
-						.getClassResults().entrySet()) {
-					System.out.println("Class    "
-							+ classEntry.getKey());
-					for (Map.Entry<String, List<TestCase>> caseEntry : classEntry
-							.getValue().getFailureCatagory().entrySet()) {
-						System.out.println("failureCatagory       " +caseEntry.getKey());
-						for (TestCase testCase : caseEntry.getValue()) {
-							System.out
-									.println("testCase    "
-											+ testCase.toString());
-						}
-					}
-				}
-
-			}
-			System.out.println();
-		}
 		rerunFeedBack = new RerunFeedBack(finalResult);
 
 		rerunFeedBack.feedBack();

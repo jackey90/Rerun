@@ -2,17 +2,11 @@ package com.ea.rerun.feedback.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.util.ClassPath;
 import org.apache.commons.io.FileUtils;
-import org.apache.regexp.REProgram;
 
 import com.ea.rerun.common.model.TestCase;
 import com.ea.rerun.common.util.PrintUtil;
@@ -32,10 +26,9 @@ import com.ea.rerun.getData.model.config.RerunConfig;
  */
 public class RerunFeedBack implements IFeedBack {
 	Map<String, Map<String, RerunJobResult>> finalResult;
-	// private String url = "";
-	// private String reportPath;
 	private String logPath;
-	private String reportDir;
+	private String reportDirPath;
+	private String classReportDirPath;
 
 	public RerunFeedBack(Map<String, Map<String, RerunJobResult>> finalResult) {
 		// InetAddress addr;
@@ -49,33 +42,31 @@ public class RerunFeedBack implements IFeedBack {
 		// }
 		String reportPath = RerunConfig.getInstance().getReportConfig()
 				.getReportOutPutPath();
-		reportDir = reportPath.substring(0, reportPath.lastIndexOf("\\"));
+		reportDirPath = reportPath.substring(0, reportPath.lastIndexOf("\\"));
+		File classReportDir = new File(reportDirPath + "\\classReport");
+		if (!classReportDir.exists()) {
+			classReportDir.mkdir();
+		}
+		classReportDirPath = classReportDir.getAbsolutePath();
 		logPath = RerunConfig.getInstance().getLogConfig().getLogPath();
 		this.finalResult = finalResult;
 	}
 
 	public void feedBack() {
+
 		List<ReportModel> classReport = toReportModel(finalResult);
-		reportModel2Report(classReport, reportDir + "\\class.html");
-		File result = new File("Result.html");
-		File temphtml = new File("temp.html");
-		if (!result.exists()) {
-			try {
-				result.createNewFile();
-				FileUtils.copyFile(
-						new File("src\\main\\resources\\Result.html"), result);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if (!temphtml.exists()) {
-			try {
-				temphtml.createNewFile();
-				FileUtils.copyFile(new File("src\\main\\resources\\temp.html"),
-						temphtml);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		reportModel2Report(classReport, classReportDirPath + "\\class.html");
+
+		File result = new File(reportDirPath + "\\Result.html");
+		try {
+			FileUtils.copyInputStreamToFile(this.getClass()
+					.getResourceAsStream("/resources/Result.html"), result);
+
+			File tempHtml = new File(classReportDirPath + "\\temp.html");
+			FileUtils.copyInputStreamToFile(this.getClass()
+					.getResourceAsStream("/resources/temp.html"), tempHtml);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -158,65 +149,6 @@ public class RerunFeedBack implements IFeedBack {
 
 				classResult2Report(classResult);
 
-				// Map<String, List<TestCase>> failureCatagoryMap = classResult
-				// .getFailureCatagory();
-				// int catagoryIndex = 0;
-				// for (Map.Entry<String, List<TestCase>> catagoryEntry :
-				// failureCatagoryMap
-				// .entrySet()) {
-				// catagoryIndex++;
-				// List<ReportCell> catagoryTr = null;
-				//
-				// String errorSummary = catagoryEntry.getKey();
-				// List<TestCase> cases = catagoryEntry.getValue();
-				//
-				// ReportCell failureCatagory = new ReportCell("rowspan=\""
-				// + cases.size() + "\"", "", errorSummary);
-				//
-				// int caseIndex = 0;
-				// for (TestCase testCase : cases) {
-				// caseIndex++;
-				// List<ReportCell> caseTr = null;
-				// String caseLogPath = classLogPath + "\\"
-				// + testCase.getTestName() + "\\builds\\"
-				// + testCase.getResult().getBuildCount();
-				//
-				// ReportCell caseName = new ReportCell("rowspan=\"" + 1
-				// + "\"", "target=\"_blank\" href=\""
-				// + caseLogPath + "\"", testCase.getTestName());
-				// ReportCell rerunTimes = new ReportCell("rowspan=\"" + 1
-				// + "\"", "", testCase.getResult().getRunCount()
-				// + "");
-				// if (classIndex == 1 && caseIndex == 1) {
-				// jobTr.add(caseName);
-				// jobTr.add(rerunTimes);
-				//
-				// } else if (classIndex != 1 && caseIndex == 1) {
-				// if (classTr != null) {
-				// classTr.add(caseName);
-				// classTr.add(rerunTimes);
-				// }
-				// } else if (caseIndex != 1) {
-				// caseTr = new ArrayList<ReportCell>();
-				// list.add(caseTr);
-				// caseTr.add(caseName);
-				// caseTr.add(rerunTimes);
-				// }
-				// }
-				//
-				// if (classIndex == 1 && catagoryIndex == 1) {
-				// jobTr.add(failureCatagory);
-				// } else if (classIndex != 1 && catagoryIndex == 1) {
-				// if (classTr != null) {
-				// classTr.add(failureCatagory);
-				// }
-				// } else if (catagoryIndex != 1) {
-				// catagoryTr = new ArrayList<ReportCell>();
-				// list.add(catagoryTr);
-				// catagoryTr.add(failureCatagory);
-				// }
-				// }
-
 			}
 			return list;
 		}
@@ -237,8 +169,9 @@ public class RerunFeedBack implements IFeedBack {
 
 	private void classResult2Report(RerunClassResult classResult) {
 		List<ReportModel> list = classResult2ReportModel(classResult);
-		reportModel2Report(list, reportDir + "\\" + classResult.getClassName()
-				+ ".html");
+		reportModel2Report(list,
+				classReportDirPath + "\\" + classResult.getClassName()
+						+ ".html");
 	}
 
 	private List<ReportModel> classResult2ReportModel(
@@ -251,6 +184,7 @@ public class RerunFeedBack implements IFeedBack {
 
 			List<String> headers = new ArrayList<String>();
 			headers.add("TestCase");
+			headers.add("Status");
 			headers.add("Rerun Times");
 			model.setHeaders(headers);
 			List<List<ReportCell>> bodys = new ArrayList<List<ReportCell>>();
@@ -259,17 +193,23 @@ public class RerunFeedBack implements IFeedBack {
 				List<TestCase> caseList = catagoryEntry.getValue();
 				for (TestCase testCase : caseList) {
 					List<ReportCell> caseAndRerunTimesTr = new ArrayList<ReportCell>();
-					ReportCell caseTd = new ReportCell("", "",
-							testCase.getTestName());
+					ReportCell caseTd = new ReportCell("",
+							"", testCase.getPack()
+									+ "." + testCase.getClassName() + "#"
+									+ testCase.getTestName());
+					ReportCell statusTd = new ReportCell("",
+							"style=\"font-weight:bold\"", testCase.getResult()
+									.getResultType().toString());
 					ReportCell rerunTimesTd = new ReportCell("", "", testCase
 							.getResult().getRunCount() + "");
 					caseAndRerunTimesTr.add(caseTd);
+					caseAndRerunTimesTr.add(statusTd);
 					caseAndRerunTimesTr.add(rerunTimesTd);
 					bodys.add(caseAndRerunTimesTr);
 				}
 				String errorMsg = catagoryEntry.getKey();
 				List<ReportCell> errorMsgTr = new ArrayList<ReportCell>();
-				ReportCell errorMsgTd = new ReportCell("colspan=\"2\"", "",
+				ReportCell errorMsgTd = new ReportCell("colspan=\""+headers.size()+"\"", "",
 						errorMsg);
 				errorMsgTr.add(errorMsgTd);
 				bodys.add(errorMsgTr);

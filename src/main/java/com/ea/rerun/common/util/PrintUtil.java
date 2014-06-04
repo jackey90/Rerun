@@ -11,6 +11,7 @@ public class PrintUtil {
 		System.out.println("Error xxxxxxxxxxxxxxxxxxxxxxxx");
 		System.out.println(str);
 		System.out.println();
+		System.exit(0);
 	}
 	
 	public static void info(String str) {

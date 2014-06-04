@@ -29,4 +29,9 @@ public class JenkinsModule {
 		this.lastBuildResult = lastBuildResult;
 	}
 
+	@Override
+	public String toString() {
+		return lastBuildResult.toString();
+	}
+
 }

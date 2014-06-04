@@ -52,11 +52,17 @@ public class ReportFormatter {
 
 	public String formatReport() {
 		String templateContent = "";
+		InputStreamReader isr;
 		try {
-			File file = new File(templateFile);
+			if (templateFile != null) {
+				File file = new File(templateFile);
+				isr = new InputStreamReader(new FileInputStream(file), "utf-8");
+			} else {
+				isr = new InputStreamReader(this.getClass()
+						.getResourceAsStream(
+								"/resources/defaultReportTemplate.xml"));
+			}
 			StringBuffer buffer = new StringBuffer();
-			InputStreamReader isr = new InputStreamReader(new FileInputStream(
-					file), "utf-8");
 			int s;
 			while ((s = isr.read()) != -1) {
 				buffer.append((char) s);

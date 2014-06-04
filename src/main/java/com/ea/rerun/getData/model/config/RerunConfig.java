@@ -80,18 +80,20 @@ public class RerunConfig {
 				return reader.read(configPath);
 			} catch (DocumentException e) {
 				try {
-					PrintUtil.warning("rerunConfig.xml is not found, use default!");
+					PrintUtil.error("RerunConfig.xml is not found!");
 					return reader
-							.read("..\\Rerun\\src\\main\\resources\\defaultRerunConfig.xml");
+							.read(this.getClass()
+									.getResourceAsStream("/resources/defaultRerunConfig.xml"));
 				} catch (DocumentException e1) {
 					e1.printStackTrace();
 				}
 			}
 		} else {
-			PrintUtil.warning("rerunConfig.xml is not found, use default!");
+			PrintUtil.error("RerunConfig.xml is not found!");
 			try {
 				return reader
-						.read("..\\Rerun\\src\\main\\resources\\defaultRerunConfig.xml");
+						.read(this.getClass()
+								.getResourceAsStream("/resources/defaultRerunConfig.xml"));
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}

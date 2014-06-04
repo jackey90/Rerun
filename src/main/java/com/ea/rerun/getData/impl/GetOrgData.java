@@ -73,6 +73,7 @@ public class GetOrgData implements IGetData {
 					List<String> rerunNames = rerunViewEntry.getValue();
 					List<String> jenKinsNames = jenKinsViews.get(rerunViewEntry
 							.getKey());
+					// Rerun Jobs
 					List<String> names = new ArrayList<String>();
 					if (rerunNames == null) {
 						names.addAll(jenKinsNames);
@@ -165,17 +166,20 @@ public class GetOrgData implements IGetData {
 		File moduleFile = new File(modulePath);
 		if (moduleFile.exists() && moduleFile.isDirectory()) {
 			JenkinsModule module = new JenkinsModule();
-			FileAnalyser analyser = new FileAnalyser(modulePath
-					+ "\\nextBuildNumber");
-			String nextNumber = analyser.readLine(1);
-			if (nextNumber != null) {
-				module.setNextBuildNumber(Integer.parseInt(nextNumber));
+			File nexeNumberFile = new File(modulePath + "\\nextBuildNumber");
+			if (nexeNumberFile.exists()) {
+				FileAnalyser analyser = new FileAnalyser(modulePath
+						+ "\\nextBuildNumber");
+				String nextNumber = analyser.readLine(1);
+				if (nextNumber != null) {
+					module.setNextBuildNumber(Integer.parseInt(nextNumber));
+				}
+				module.setModuleName(moduleFile.getName());
+				module.setLastBuildResult(getLastFailedJenkinsJunitResult(
+						modulePath, module.getNextBuildNumber()));
 			}
-			module.setModuleName(moduleFile.getName());
-			module.setLastBuildResult(getLastFailedJenkinsJunitResult(
-					modulePath, module.getNextBuildNumber()));
-
 			return module;
+
 		}
 		return null;
 	}
@@ -200,7 +204,8 @@ public class GetOrgData implements IGetData {
 				nextNumber);
 		String lastBuildFolderPath = modulePath + "\\builds\\"
 				+ lastBuildFolderNumber;
-		if (lastBuildFolderPath != null) {
+		File lastBuildFolder = new File(lastBuildFolderPath);
+		if (lastBuildFolder.exists() && lastBuildFolder.isDirectory()) {
 			JenkinsJunitResult unitResult = new JenkinsJunitResult();
 
 			XMLAnalyser buildXml = new XMLAnalyser(new File(lastBuildFolderPath

@@ -70,4 +70,12 @@ public class JenkinsJunitResult {
 		this.failCount = failCount;
 	}
 
+	@Override
+	public String toString() {
+		return "totalDuration: " + totalDuration + ",    keepLongStdio:  "
+				+ keepLongStdio + ",   totalCount:   " + totalCount
+				+ ",    skipCount:  " + skipCount + ",   failCount:   "
+				+ failCount + "\n";
+	}
+
 }

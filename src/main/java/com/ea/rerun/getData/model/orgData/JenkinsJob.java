@@ -40,4 +40,18 @@ public class JenkinsJob {
 		this.goals = goals;
 	}
 
+	private String getModulesString() {
+		StringBuffer sb = new StringBuffer();
+		for (JenkinsModule module : modules) {
+			sb.append(module.toString());
+		}
+
+		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		return jobName + "\n" + getModulesString();
+	}
+
 }

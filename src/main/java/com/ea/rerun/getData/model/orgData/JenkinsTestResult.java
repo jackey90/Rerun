@@ -22,5 +22,21 @@ public class JenkinsTestResult {
 	public void setViews(Map<String, List<JenkinsJob>> views) {
 		this.views = views;
 	}
+	
+	@Override
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		String viewName;
+		List<JenkinsJob> jobList;
+		for(Map.Entry<String, List<JenkinsJob>> viewEntry: views.entrySet()){
+			viewName = viewEntry.getKey();
+			jobList = viewEntry.getValue();
+			sb.append("****************************  "+viewName+" ****************************\n");
+			for(JenkinsJob job: jobList){
+				sb.append(job.toString());
+			}
+		}
+		return sb.toString();
+	}
 
 }

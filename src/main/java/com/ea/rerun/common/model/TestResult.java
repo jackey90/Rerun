@@ -61,7 +61,7 @@ public class TestResult {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			// startRunCommand(test);
+			//startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -96,7 +96,7 @@ public class TestResult {
 
 			}
 		} else {
-			PrintUtil.error("Can not find the pomPath!");
+			PrintUtil.warning("Can not find the pomPath!");
 		}
 	}
 

@@ -98,7 +98,7 @@ public class LogUtil {
 			try {
 				FileUtils.forceMkdir(desReportDir);
 				if (!nextNumberFile.createNewFile()) {
-					PrintUtil.error("Failure to create nextNumber file!");
+					PrintUtil.warning("Failure to create nextNumber file!");
 				} else {
 					analyser = new FileAnalyser(nextNumberFile);
 					analyser.write("1");

@@ -37,14 +37,15 @@ public class MavenUtil {
 				pb = new ProcessBuilder(command);
 			}
 
-			//pb.redirectErrorStream();
+			// pb.redirectErrorStream();
 			process = pb.start();
+			System.out.println("Run command :" + command);
 			InputStreamConsumer isc = new InputStreamConsumer(
 					process.getInputStream());
 			isc.start();
 			int exitCode = process.waitFor();
 			isc.join();
-			System.out.println("Process terminated with " + exitCode);
+			// System.out.println("Process terminated with " + exitCode);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -79,7 +80,7 @@ public class MavenUtil {
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					if (line != null) {
-						System.out.println(line);
+						// System.out.println(line);
 					}
 				}
 			} catch (IOException e) {
