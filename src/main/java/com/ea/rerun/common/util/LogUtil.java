@@ -10,7 +10,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
+import com.ea.rerun.analyse.model.RerunResultStatusEnun;
 import com.ea.rerun.common.model.TestCase;
+import com.ea.rerun.common.model.TestResultType;
 import com.ea.rerun.getData.model.config.KeepLogEnum;
 import com.ea.rerun.getData.model.config.RerunConfig;
 import com.ea.rerun.getData.model.config.RerunLogConfig;
@@ -25,27 +27,39 @@ public class LogUtil {
 		int daysToKeep = logConfig.getDaysToKeep();
 
 		deleteDayBefore(daysToKeep);
-		copyReportAll(testCase, orgReport);
+		copyReport(testCase, orgReport, logConfig.getKeepLogEnum());
+	}
 
-		switch (logConfig.getKeepLogEnum()) {
+	// TODO
+	private static void deleteDayBefore(int daysToKeep) {
+		
+	}
+
+	private static void copyReport(TestCase test, File orgReport,
+			KeepLogEnum keepLogEnum) {
+		switch (keepLogEnum) {
 		case KeepAll:
 			break;
-		case KeepSuccess:
-			break;
-		case KeepFailure:
-			break;
 		case KeepNone:
-			break;
+			return;
+		case KeepFailure:
+			if (!test.getResult().getResultType()
+					.equals(TestResultType.Successed)) {
+				break;
+			} else {
+				return;
+			}
+		case KeepSuccess:
+			if (test.getResult().getResultType()
+					.equals(TestResultType.Successed)) {
+				break;
+			} else {
+				return;
+			}
 		default:
-			break;
+			return;
 		}
-	}
 
-	private static void deleteDayBefore(int daysToKeep) {
-
-	}
-
-	private static void copyReportAll(TestCase test, File orgReport) {
 		File desReportDir = new File(logConfig.getLogPath() + "\\"
 				+ test.getBranch() + "\\" + test.getPack() + "."
 				+ test.getClassName() + "\\" + test.getTestName() + "\\builds");

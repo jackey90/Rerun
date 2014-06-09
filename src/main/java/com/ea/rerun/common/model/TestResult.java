@@ -10,6 +10,7 @@ import com.ea.rerun.common.util.LogUtil;
 import com.ea.rerun.common.util.MavenUtil;
 import com.ea.rerun.common.util.PrintUtil;
 import com.ea.rerun.common.util.XMLAnalyser;
+import com.ea.rerun.main.Rerun;
 import com.ibm.icu.math.BigDecimal;
 
 public class TestResult {
@@ -51,17 +52,11 @@ public class TestResult {
 	public void run(final TestCase test) {
 		while (!shouldStop()) {
 			runCount++;
-			PrintUtil.info(runCount + "times : " + test.toString());
-			try {
-				for (int i = -1; i >= 0; i--) {
-					System.out.println("*********************   " + i
-							+ " ***************************");
-					Thread.sleep(1000);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			//startRunCommand(test);
+			PrintUtil
+					.countDown(
+							"Running the " + runCount + "times :"
+									+ test.toString(), -1);
+			startRunCommand(test);
 			getResult(test);
 		}
 	}
@@ -217,7 +212,7 @@ public class TestResult {
 
 		}
 
-		if (runCount >= 4) {
+		if (runCount >= Rerun.maxRerunTime) {
 			shouldStop = true;
 			resultType = TestResultType.UnStable_Failed;
 			PrintUtil.info("Unstable failure");

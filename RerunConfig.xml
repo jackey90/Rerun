@@ -1,7 +1,8 @@
 <rerunConfig>
 	<jenkins>
-		<jenkinsURL>http://eashdpdesk161.aaa.ad.ea.com:8080</jenkinsURL>
+		<!-- must must-->
 		<jenkinsFolder>C:\Program Files (x86)\Jenkins</jenkinsFolder>
+		<!-- optional: default is all view-->
 		<views>
 			<!--<listView>
 				<name>BVT</name>
@@ -15,23 +16,19 @@
 		</views>
 	</jenkins>
 	
-	<log>
-		<keepLog></keepLog>
-		<daysToKeep>50</daysToKeep>
-	</log>
+	<report>
+		<!-- optional: default template is in the Rerun.jar-->
+		<ReportTemplatePath></ReportTemplatePath>
+	</report>
 
-	<mail>
-		<SMTPHost>mailhost.ea.com</SMTPHost>
-		<Enable>false</Enable>
-		<Subject>BVT report for REL</Subject>
-		<From>EADPAutoEx@ea.com</From>
-		<ToList>
-			<String>jinhuang@ea.com</String>
-		</ToList>
-		<CCList>
-			<String>EADPAutoEx@ea.com</String>
-		</CCList>
-	</mail>
+	<log>
+		<!---- optional: default is KeepFailure     (KeepAll,KeepNone,KeepSuccess,KeepFailure)-->
+		<keepLog></keepLog>
+		<!-- optional: default is 50-->
+		<daysToKeep>50</daysToKeep>
+		<!-- optional: default is  currentPah+"\\rerunLog"-->
+		<logPath></logPath>
+	</log>
 
 
 

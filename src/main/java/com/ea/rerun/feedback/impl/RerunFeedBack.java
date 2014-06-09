@@ -193,10 +193,9 @@ public class RerunFeedBack implements IFeedBack {
 				List<TestCase> caseList = catagoryEntry.getValue();
 				for (TestCase testCase : caseList) {
 					List<ReportCell> caseAndRerunTimesTr = new ArrayList<ReportCell>();
-					ReportCell caseTd = new ReportCell("",
-							"", testCase.getPack()
-									+ "." + testCase.getClassName() + "#"
-									+ testCase.getTestName());
+					ReportCell caseTd = new ReportCell("", "",
+							testCase.getPack() + "." + testCase.getClassName()
+									+ "#" + testCase.getTestName());
 					ReportCell statusTd = new ReportCell("",
 							"style=\"font-weight:bold\"", testCase.getResult()
 									.getResultType().toString());
@@ -209,8 +208,8 @@ public class RerunFeedBack implements IFeedBack {
 				}
 				String errorMsg = catagoryEntry.getKey();
 				List<ReportCell> errorMsgTr = new ArrayList<ReportCell>();
-				ReportCell errorMsgTd = new ReportCell("colspan=\""+headers.size()+"\"", "",
-						errorMsg);
+				ReportCell errorMsgTd = new ReportCell("colspan=\""
+						+ headers.size() + "\"", "", errorMsg);
 				errorMsgTr.add(errorMsgTd);
 				bodys.add(errorMsgTr);
 			}

@@ -39,7 +39,7 @@ public class MavenUtil {
 
 			// pb.redirectErrorStream();
 			process = pb.start();
-			System.out.println("Run command :" + command);
+			//System.out.println("Run command :" + command);
 			InputStreamConsumer isc = new InputStreamConsumer(
 					process.getInputStream());
 			isc.start();
@@ -78,11 +78,17 @@ public class MavenUtil {
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			try {
 				String line = null;
+				int index = 0;
 				while ((line = br.readLine()) != null) {
 					if (line != null) {
+						index++;
 						// System.out.println(line);
+						if (index % 10 == 0) {
+							System.out.print(".");
+						}
 					}
 				}
+				System.out.println();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {

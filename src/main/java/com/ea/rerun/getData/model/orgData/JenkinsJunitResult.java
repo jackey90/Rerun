@@ -72,10 +72,12 @@ public class JenkinsJunitResult {
 
 	@Override
 	public String toString() {
-		return "totalDuration: " + totalDuration + ",    keepLongStdio:  "
-				+ keepLongStdio + ",   totalCount:   " + totalCount
-				+ ",    skipCount:  " + skipCount + ",   failCount:   "
-				+ failCount + "\n";
+		if (failCount > 0 || skipCount > 0) {
+			return "total:   " + totalCount + ",    skip:  " + skipCount
+					+ ",   fail:   " + failCount + "\n";
+		} else {
+			return "";
+		}
 	}
 
 }

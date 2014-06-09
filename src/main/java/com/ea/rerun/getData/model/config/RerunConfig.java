@@ -42,7 +42,7 @@ public class RerunConfig {
 	}
 
 	private RerunConfig() {
-		configPath = currentPath + "\\rerunConfig.xml";
+		configPath = currentPath + "\\RerunConfig.xml";
 		doc = getDocument();
 		jenkinsConfig = RerunJenkinsConfig.getInstance(doc);
 		reportConfig = RerunReportConfig.getInstance(doc);

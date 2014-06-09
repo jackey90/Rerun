@@ -22,18 +22,22 @@ public class JenkinsTestResult {
 	public void setViews(Map<String, List<JenkinsJob>> views) {
 		this.views = views;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		String viewName;
 		List<JenkinsJob> jobList;
-		for(Map.Entry<String, List<JenkinsJob>> viewEntry: views.entrySet()){
+		for (Map.Entry<String, List<JenkinsJob>> viewEntry : views.entrySet()) {
 			viewName = viewEntry.getKey();
 			jobList = viewEntry.getValue();
-			sb.append("****************************  "+viewName+" ****************************\n");
-			for(JenkinsJob job: jobList){
-				sb.append(job.toString());
+			sb.append("****************************  " + viewName
+					+ " ****************************\n");
+			for (JenkinsJob job : jobList) {
+				String jobStr = job.toString();
+				if (!jobStr.equals("")) {
+					sb.append(jobStr);
+				}
 			}
 		}
 		return sb.toString();

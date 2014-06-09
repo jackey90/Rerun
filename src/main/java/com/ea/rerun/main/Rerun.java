@@ -1,6 +1,8 @@
 package com.ea.rerun.main;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +10,9 @@ import java.util.Map;
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
-import com.ea.rerun.common.model.TestCase;
+import com.ea.rerun.common.util.PrintUtil;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.impl.RerunFeedBack;
-import com.ea.rerun.feedback.model.RerunClassResult;
 import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.IGetData;
 import com.ea.rerun.getData.impl.GetOrgData;
@@ -21,6 +22,7 @@ public class Rerun {
 	private IGetData getRerunData;
 	private IAnalyse analyseData;
 	private static IFeedBack rerunFeedBack;
+	public static int maxRerunTime;
 
 	public Rerun() {
 		getRerunData = new GetOrgData();
@@ -37,22 +39,70 @@ public class Rerun {
 	}
 
 	public static void main(String[] args) {
-		Rerun r = new Rerun();
-		JenkinsTestResult result = r.getJenkinsTestResult();
-		System.out.println(result.toString());
-		AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(result);
-		List<MavenRerunTestCase> list = an.getAnalyseData();
+		if (args.length == 1) {
 
-		List<String> strList = new ArrayList<String>();
-		int i = 1;
+			if (tryParseInt(args[0].toString())) {
+				maxRerunTime = Integer.parseInt(args[0].toString());
+				if (maxRerunTime <= 0 || maxRerunTime >= 10) {
+					PrintUtil
+							.error("the maxRerunTime should be ranged in [1,9]");
+				}
+				Rerun r = new Rerun();
+				JenkinsTestResult result = r.getJenkinsTestResult();
+				System.out.println(result.toString());
+				AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(
+						result);
+				List<MavenRerunTestCase> list = an.getAnalyseData();
+
+				if (list.size() * maxRerunTime > 50) {
+					// PrintUtil
+					// .countDown(
+					// "The rerun operation will take a long time, If you want to quit, please press CTRL + c",
+					// 7);
+					System.out
+							.println("The rerun operation will take a long time, continue? Y/N");
+					InputStreamReader is_reader = new InputStreamReader(
+							System.in);
+					try {
+						String str = new BufferedReader(is_reader).readLine();
+						if (!str.trim().toUpperCase().endsWith("Y")) {
+							System.exit(0);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				r.rerunCommand(list);
+
+				rerunFeedBack = new RerunFeedBack(r.formatFinalResult(list));
+				rerunFeedBack.feedBack();
+			} else {
+				PrintUtil
+						.error("The input param must be a integer! \neg: java -jar Rerun.jar 4");
+			}
+		} else if (args.length == 0) {
+			PrintUtil
+					.error("Please input the param: maxRerunNumber\neg: java -jar Rerun.jar 4");
+		} else {
+			PrintUtil.error("Invalid parameter\neg: java -jar Rerun.jar 4");
+		}
+	}
+
+	private void rerunCommand(List<MavenRerunTestCase> list) {
+		for (MavenRerunTestCase cmd : list) {
+			cmd.getTestCase().run();
+		}
+	}
+
+	private Map<String, Map<String, RerunJobResult>> formatFinalResult(
+			List<MavenRerunTestCase> list) {
 		Map<String, Map<String, RerunJobResult>> finalResult = new LinkedHashMap<String, Map<String, RerunJobResult>>();
 		// Map<String, List<TestCase>> map = new HashMap<String,
 		// List<TestCase>>();
 		for (MavenRerunTestCase cmd : list) {
 			// System.out.println(cmd.getTestCase().toString());
 			// System.out.println(cmd.getTestCase().getMavenCommand());
-			cmd.getTestCase().run();
-			
+
 			if (finalResult.containsKey(cmd.getViewName())) {
 				Map<String, RerunJobResult> map = finalResult.get(cmd
 						.getViewName());
@@ -84,11 +134,7 @@ public class Rerun {
 			}
 		}
 
-		rerunFeedBack = new RerunFeedBack(finalResult);
-
-		rerunFeedBack.feedBack();
-
-		System.out.println();
+		return finalResult;
 	}
 
 	public IGetData getGetRerunData() {
@@ -109,6 +155,15 @@ public class Rerun {
 
 	public IAnalyse getAnalyseData() {
 		return analyseData;
+	}
+
+	static boolean tryParseInt(String value) {
+		try {
+			Integer.parseInt(value);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
 	}
 
 }

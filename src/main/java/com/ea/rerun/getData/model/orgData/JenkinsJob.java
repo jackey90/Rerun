@@ -42,8 +42,12 @@ public class JenkinsJob {
 
 	private String getModulesString() {
 		StringBuffer sb = new StringBuffer();
+		String moduleStr = "";
 		for (JenkinsModule module : modules) {
-			sb.append(module.toString());
+			moduleStr = module.toString();
+			if (!moduleStr.equals("")) {
+				sb.append(moduleStr);
+			}
 		}
 
 		return sb.toString();
@@ -51,7 +55,12 @@ public class JenkinsJob {
 
 	@Override
 	public String toString() {
-		return jobName + "\n" + getModulesString();
+		String modulesStr = getModulesString();
+		if (!modulesStr.equals("")) {
+			return jobName + "\n    " + modulesStr;
+		} else {
+			return "";
+		}
 	}
 
 }

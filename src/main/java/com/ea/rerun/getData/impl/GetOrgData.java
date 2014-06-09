@@ -190,7 +190,8 @@ public class GetOrgData implements IGetData {
 		int i = nextNumber;
 		for (; i >= 1; i--) {
 			filePath = modulePath + "\\builds\\" + i;
-			if (new File(filePath).exists() && new File(filePath).isDirectory()) {
+			if (new File(filePath).exists() && new File(filePath).isDirectory()
+					&& new File(filePath + "\\build.xml").exists()) {
 				break;
 			}
 		}
@@ -207,44 +208,47 @@ public class GetOrgData implements IGetData {
 		File lastBuildFolder = new File(lastBuildFolderPath);
 		if (lastBuildFolder.exists() && lastBuildFolder.isDirectory()) {
 			JenkinsJunitResult unitResult = new JenkinsJunitResult();
+			if (new File(lastBuildFolderPath + "\\build.xml").exists()) {
+				XMLAnalyser buildXml = new XMLAnalyser(new File(
+						lastBuildFolderPath + "\\build.xml"));
+				String failCountStr = buildXml
+						.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/failCount");
+				String skipCount = buildXml
+						.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/skipCount");
+				String totalCount = buildXml
+						.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/totalCount");
 
-			XMLAnalyser buildXml = new XMLAnalyser(new File(lastBuildFolderPath
-					+ "\\build.xml"));
-			String failCountStr = buildXml
-					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/failCount");
-			String skipCount = buildXml
-					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/skipCount");
-			String totalCount = buildXml
-					.getNodeString("//hudson.maven.MavenBuild/actions/hudson.maven.reporters.SurefireReport/totalCount");
+				if (!StringUtil.isNullOrEmpty(failCountStr)) {
+					unitResult.setFailCount(Integer.parseInt(failCountStr
+							.trim()));
+				}
+				if (!StringUtil.isNullOrEmpty(skipCount)) {
+					unitResult.setSkipCount(Integer.parseInt(skipCount.trim()));
+				}
+				if (!StringUtil.isNullOrEmpty(totalCount)) {
+					unitResult
+							.setTotalCount(Integer.parseInt(totalCount.trim()));
+				}
+				unitResult.setBuildNumber(lastBuildFolderNumber);
 
-			if (!StringUtil.isNullOrEmpty(failCountStr)) {
-				unitResult.setFailCount(Integer.parseInt(failCountStr.trim()));
+				File junitResultXml = new File(lastBuildFolderPath
+						+ "\\junitResult.xml");
+				if (!junitResultXml.exists()) {
+					unitResult
+							.setSuites(new ArrayList<JenkinsJunitResultSuite>());
+					return unitResult;
+				}
+
+				XMLAnalyser juniteAnalyer = new XMLAnalyser(junitResultXml);
+				String durationStr = juniteAnalyer
+						.getNodeString("//result/duration");
+				unitResult.setTotalDuration(new BigDecimal(durationStr.trim()));
+				String keepLongStdioStr = juniteAnalyer
+						.getNodeString("//result/keepLongStdio");
+				unitResult.setKeepLongStdio(Boolean
+						.parseBoolean(keepLongStdioStr.trim()));
+				unitResult.setSuites(getLastFailedSuites(juniteAnalyer));
 			}
-			if (!StringUtil.isNullOrEmpty(skipCount)) {
-				unitResult.setSkipCount(Integer.parseInt(skipCount.trim()));
-			}
-			if (!StringUtil.isNullOrEmpty(totalCount)) {
-				unitResult.setTotalCount(Integer.parseInt(totalCount.trim()));
-			}
-			unitResult.setBuildNumber(lastBuildFolderNumber);
-
-			File junitResultXml = new File(lastBuildFolderPath
-					+ "\\junitResult.xml");
-			if (!junitResultXml.exists()) {
-				unitResult.setSuites(new ArrayList<JenkinsJunitResultSuite>());
-				return unitResult;
-			}
-
-			XMLAnalyser juniteAnalyer = new XMLAnalyser(junitResultXml);
-			String durationStr = juniteAnalyer
-					.getNodeString("//result/duration");
-			unitResult.setTotalDuration(new BigDecimal(durationStr.trim()));
-			String keepLongStdioStr = juniteAnalyer
-					.getNodeString("//result/keepLongStdio");
-			unitResult.setKeepLongStdio(Boolean.parseBoolean(keepLongStdioStr
-					.trim()));
-			unitResult.setSuites(getLastFailedSuites(juniteAnalyer));
-
 			return unitResult;
 		}
 
