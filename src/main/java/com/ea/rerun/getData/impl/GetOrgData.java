@@ -179,7 +179,6 @@ public class GetOrgData implements IGetData {
 						modulePath, module.getNextBuildNumber()));
 			}
 			return module;
-
 		}
 		return null;
 	}

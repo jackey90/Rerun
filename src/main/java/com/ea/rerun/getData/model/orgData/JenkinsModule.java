@@ -31,6 +31,9 @@ public class JenkinsModule {
 
 	@Override
 	public String toString() {
+		if(lastBuildResult == null){
+			return "";
+		}
 		return lastBuildResult.toString();
 	}
 

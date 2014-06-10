@@ -44,43 +44,47 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 						List<JenkinsModule> moduleList = job.getModules();
 						if (moduleList != null) {
 							for (JenkinsModule module : moduleList) {
-								//String moduleName = module.getModuleName();
+								// String moduleName = module.getModuleName();
 								JenkinsJunitResult testResult = module
 										.getLastBuildResult();
-								for (JenkinsJunitResultSuite jenkinsSuite : testResult
-										.getSuites()) {
-									for (JenkinsJunitResultCase jenkinsCase : jenkinsSuite
-											.getCases()) {
-										MavenRerunTestCase command = new MavenRerunTestCase();
-										command.setViewName(viewName);
-										command.setJobName(jobName);
-										TestCase testCase = new TestCase();
-										if (pomPath != null) {
-											String[] pathArray = pomPath
-													.split("\\\\");
-											if (pathArray.length >= 3) {
-												if (!pathArray[pathArray.length - 3]
-														.contains("nexus")) {
-													testCase.setBranch(pathArray[pathArray.length - 3]);
-													testCase.setBundle(pathArray[pathArray.length - 2]);
-												} else {
-													testCase.setBranch(pathArray[pathArray.length - 4]);
-													testCase.setBundle(pathArray[pathArray.length - 3]
-															+ "\\"
-															+ pathArray[pathArray.length - 2]);
+								if (testResult != null) {
+									for (JenkinsJunitResultSuite jenkinsSuite : testResult
+											.getSuites()) {
+										if (jenkinsSuite != null) {
+											for (JenkinsJunitResultCase jenkinsCase : jenkinsSuite
+													.getCases()) {
+												MavenRerunTestCase command = new MavenRerunTestCase();
+												command.setViewName(viewName);
+												command.setJobName(jobName);
+												TestCase testCase = new TestCase();
+												if (pomPath != null) {
+													String[] pathArray = pomPath
+															.split("\\\\");
+													if (pathArray.length >= 3) {
+														if (!pathArray[pathArray.length - 3]
+																.contains("nexus")) {
+															testCase.setBranch(pathArray[pathArray.length - 3]);
+															testCase.setBundle(pathArray[pathArray.length - 2]);
+														} else {
+															testCase.setBranch(pathArray[pathArray.length - 4]);
+															testCase.setBundle(pathArray[pathArray.length - 3]
+																	+ "\\"
+																	+ pathArray[pathArray.length - 2]);
+														}
+													}
 												}
+												testCase.setPack(jenkinsCase
+														.getPackageName());
+												testCase.setClassName(jenkinsCase
+														.getClassName());
+												testCase.setTestName(jenkinsCase
+														.getTestName());
+												testCase.setPomPath(pomPath);
+												testCase.setGoals(goals);
+												command.setTestCase(testCase);
+												list.add(command);
 											}
 										}
-										testCase.setPack(jenkinsCase
-												.getPackageName());
-										testCase.setClassName(jenkinsCase
-												.getClassName());
-										testCase.setTestName(jenkinsCase
-												.getTestName());
-										testCase.setPomPath(pomPath);
-										testCase.setGoals(goals);
-										command.setTestCase(testCase);
-										list.add(command);
 									}
 								}
 							}

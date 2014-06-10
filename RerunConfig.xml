@@ -8,10 +8,10 @@
 				<name>BVT</name>
 			</listView>-->
 			<listView>
-				<name>Comprehensive</name>
-				<!--<jobNames>
-					<string>commerce-Comprehensive</string>
-				</jobNames>-->
+				<name>BVT</name>
+				<jobNames>
+					<string>commerce-BVT</string>
+				</jobNames>
 			</listView>
 		</views>
 	</jenkins>
@@ -22,7 +22,7 @@
 	</report>
 
 	<log>
-		<!---- optional: default is KeepFailure     (KeepAll,KeepNone,KeepSuccess,KeepFailure)-->
+		<!-- optional: default is KeepFailure     (KeepAll,KeepNone,KeepSuccess,KeepFailure)-->
 		<keepLog></keepLog>
 		<!-- optional: default is 50-->
 		<daysToKeep>50</daysToKeep>

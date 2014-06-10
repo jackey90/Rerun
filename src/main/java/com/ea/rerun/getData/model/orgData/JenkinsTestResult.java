@@ -31,15 +31,23 @@ public class JenkinsTestResult {
 		for (Map.Entry<String, List<JenkinsJob>> viewEntry : views.entrySet()) {
 			viewName = viewEntry.getKey();
 			jobList = viewEntry.getValue();
-			sb.append("****************************  " + viewName
-					+ " ****************************\n");
-			for (JenkinsJob job : jobList) {
-				String jobStr = job.toString();
-				if (!jobStr.equals("")) {
-					sb.append(jobStr);
+			if (viewName != null && jobList != null && jobList.size() > 0
+					&& jobList.get(0) != null
+					&& !jobList.get(0).toString().equals("")) {
+				sb.append("****************************  " + viewName
+						+ " ****************************\n");
+				for (JenkinsJob job : jobList) {
+					String jobStr = job.toString();
+					if (!jobStr.equals("")) {
+						sb.append(jobStr);
+					}
 				}
 			}
 		}
+		if (sb.length() <= 0) {
+			return "No failure cases  ^_^";
+		}
+
 		return sb.toString();
 	}
 

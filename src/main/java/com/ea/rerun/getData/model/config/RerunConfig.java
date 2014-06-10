@@ -24,7 +24,7 @@ public class RerunConfig {
 	private final RerunReportConfig reportConfig;
 	private final RerunLogConfig logConfig;
 	private final RerunMailConfig mailConfig;
-	
+
 	public RerunJenkinsConfig getJenkinsConfig() {
 		return jenkinsConfig;
 	}
@@ -43,6 +43,7 @@ public class RerunConfig {
 
 	private RerunConfig() {
 		configPath = currentPath + "\\RerunConfig.xml";
+		//System.out.println("configPath================  " + configPath);
 		doc = getDocument();
 		jenkinsConfig = RerunJenkinsConfig.getInstance(doc);
 		reportConfig = RerunReportConfig.getInstance(doc);
@@ -79,11 +80,11 @@ public class RerunConfig {
 			try {
 				return reader.read(configPath);
 			} catch (DocumentException e) {
+				e.printStackTrace();
 				try {
 					PrintUtil.error("RerunConfig.xml is not found!");
-					return reader
-							.read(this.getClass()
-									.getResourceAsStream("/resources/defaultRerunConfig.xml"));
+					return reader.read(this.getClass().getResourceAsStream(
+							"/resources/defaultRerunConfig.xml"));
 				} catch (DocumentException e1) {
 					e1.printStackTrace();
 				}
@@ -91,9 +92,8 @@ public class RerunConfig {
 		} else {
 			PrintUtil.error("RerunConfig.xml is not found!");
 			try {
-				return reader
-						.read(this.getClass()
-								.getResourceAsStream("/resources/defaultRerunConfig.xml"));
+				return reader.read(this.getClass().getResourceAsStream(
+						"/resources/defaultRerunConfig.xml"));
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}

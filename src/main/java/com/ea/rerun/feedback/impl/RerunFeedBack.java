@@ -55,7 +55,8 @@ public class RerunFeedBack implements IFeedBack {
 	public void feedBack() {
 
 		List<ReportModel> classReport = toReportModel(finalResult);
-		reportModel2Report(classReport, classReportDirPath + "\\class.html");
+		reportModel2Report(classReport, classReportDirPath + "\\class.html",
+				false);
 
 		File result = new File(reportDirPath + "\\Result.html");
 		try {
@@ -147,7 +148,7 @@ public class RerunFeedBack implements IFeedBack {
 					classTr.add(classNameTd);
 				}
 
-				classResult2Report(classResult);
+				classResult2Report(classResult, true);
 
 			}
 			return list;
@@ -167,11 +168,12 @@ public class RerunFeedBack implements IFeedBack {
 		return null;
 	}
 
-	private void classResult2Report(RerunClassResult classResult) {
+	private void classResult2Report(RerunClassResult classResult,
+			boolean needPrint) {
 		List<ReportModel> list = classResult2ReportModel(classResult);
 		reportModel2Report(list,
 				classReportDirPath + "\\" + classResult.getClassName()
-						+ ".html");
+						+ ".html", needPrint);
 	}
 
 	private List<ReportModel> classResult2ReportModel(
@@ -221,13 +223,14 @@ public class RerunFeedBack implements IFeedBack {
 	}
 
 	private void reportModel2Report(List<ReportModel> reportModelList,
-			String reportOutputPath) {
+			String reportOutputPath, boolean needPrint) {
 		ReportFormatter formatReport = new ReportFormatter(reportModelList);
 		String reportMessage = formatReport.formatReport();
-		writeStringToFile(reportMessage, reportOutputPath);
+		writeStringToFile(reportMessage, reportOutputPath, needPrint);
 	}
 
-	private void writeStringToFile(String reportMessage, String reportOutputPath) {
+	private void writeStringToFile(String reportMessage,
+			String reportOutputPath, boolean needPrint) {
 		try {
 			File reportFile = new File(reportOutputPath);
 			if (!reportFile.exists()) {
@@ -237,7 +240,9 @@ public class RerunFeedBack implements IFeedBack {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		PrintUtil.info("Success to generate report :" + reportOutputPath);
+		if (needPrint) {
+			PrintUtil.info("Success to generate report :" + reportOutputPath);
+		}
 	}
 
 }
