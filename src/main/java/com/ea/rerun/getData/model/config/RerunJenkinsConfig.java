@@ -45,7 +45,7 @@ public class RerunJenkinsConfig extends XMLAnalyser {
 			try {
 				addr = InetAddress.getLocalHost();
 				address = addr.getHostName().toString();
-				warning("JenKinsURL not set, use default :" + address);
+				//warning("JenKinsURL not set, use default :" + address);
 				return address + ":8080";
 			} catch (UnknownHostException e) {
 				e.printStackTrace();

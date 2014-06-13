@@ -1,5 +1,9 @@
 package com.ea.rerun.getData.model.config;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
@@ -43,7 +47,7 @@ public class RerunConfig {
 
 	private RerunConfig() {
 		configPath = currentPath + "\\RerunConfig.xml";
-		//System.out.println("configPath================  " + configPath);
+		// System.out.println("configPath================  " + configPath);
 		doc = getDocument();
 		jenkinsConfig = RerunJenkinsConfig.getInstance(doc);
 		reportConfig = RerunReportConfig.getInstance(doc);
@@ -76,28 +80,31 @@ public class RerunConfig {
 
 	private Document getDocument() {
 		SAXReader reader = new SAXReader();
-		if (configPath != null) {
 			try {
 				return reader.read(configPath);
 			} catch (DocumentException e) {
-				e.printStackTrace();
-				try {
-					PrintUtil.error("RerunConfig.xml is not found!");
-					return reader.read(this.getClass().getResourceAsStream(
-							"/resources/defaultRerunConfig.xml"));
-				} catch (DocumentException e1) {
-					e1.printStackTrace();
+				if(generateRerunConfig()){
+					System.out.println("RerunConfig.xml generated, and jenkinsFolder is set to %ProgramFiles(x86)%\\Jenkins by default");
+				}else{
+					System.out.println("RerunConfig.xml can't be generated!");
+					e.printStackTrace();
 				}
+				System.exit(0);
+				return null;
 			}
-		} else {
-			PrintUtil.error("RerunConfig.xml is not found!");
-			try {
-				return reader.read(this.getClass().getResourceAsStream(
-						"/resources/defaultRerunConfig.xml"));
-			} catch (DocumentException e) {
-				e.printStackTrace();
-			}
+	}
+
+	private boolean generateRerunConfig() {
+		try {
+			File rerurnConfig = new File(currentPath + "\\RerunConfig.xml");
+			FileUtils.copyInputStreamToFile(this.getClass()
+					.getResourceAsStream("/resources/defaultRerunConfig.xml"),
+					rerurnConfig);
+			return true;
+		} catch (IOException e) {
+			// e.printStackTrace();
+			return false;
 		}
-		return null;
+
 	}
 }

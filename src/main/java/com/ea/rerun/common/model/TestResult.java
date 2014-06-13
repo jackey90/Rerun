@@ -52,10 +52,9 @@ public class TestResult {
 	public void run(final TestCase test) {
 		while (!shouldStop()) {
 			runCount++;
-			PrintUtil
-					.countDown(
-							"Running the " + runCount + "times :"
-									+ test.toString(), -1);
+			if (runCount == 1) {
+				PrintUtil.countDown("Running " + test.toString(), -1);
+			}
 			startRunCommand(test);
 			getResult(test);
 		}
@@ -109,16 +108,38 @@ public class TestResult {
 					String caseType = childNode.getName();
 					if (caseType.equals("failure")) {
 						addFailure(caseNode, test);
+						printFailureMessage(runCount);
 					} else if (caseType.equals("error")) {
 						addError(caseNode, test);
+						System.out.println("Error!");
 					} else {
 						PrintUtil.warning("Unknow node: " + caseType);
 					}
 				} else {
 					addSuccess(caseNode, test);
+					System.out.println("Success!");
 				}
 			}
 		}
+	}
+
+	private void printFailureMessage(int number) {
+		String temp = "";
+		switch (number) {
+		default:
+			temp = number + "th";
+			break;
+		case 1:
+			temp = "1st";
+			break;
+		case 2:
+			temp = "2nd";
+			break;
+		case 3:
+			temp = "3rd";
+			break;
+		}
+		System.out.print(" Failed " + temp + " time");
 	}
 
 	private void addError(Node caseNode, Test test) {
@@ -166,7 +187,7 @@ public class TestResult {
 			if (success.getRunNumber() == runCount) {
 				shouldStop = true;
 				resultType = TestResultType.Successed;
-				PrintUtil.info("Success !");
+				// PrintUtil.info("Success !");
 				return shouldStop;
 			}
 		}
@@ -175,7 +196,7 @@ public class TestResult {
 			if (error.getRunNumber() == runCount) {
 				shouldStop = true;
 				resultType = TestResultType.Error;
-				PrintUtil.info("Error !");
+				// PrintUtil.info("Error !");
 				return shouldStop;
 			}
 		}
@@ -193,7 +214,7 @@ public class TestResult {
 									lastFailure.getErrorStackTrace())) {
 								shouldStop = true;
 								resultType = TestResultType.Stable_Failed;
-								PrintUtil.info("Stable failure!");
+								// PrintUtil.info("Stable failure!");
 							}
 						} else if (preFailure.getErrorDetails() != null
 								&& preFailure.getErrorDetails() != null) {
@@ -203,7 +224,7 @@ public class TestResult {
 											lastFailure.getErrorStackTrace())) {
 								shouldStop = true;
 								resultType = TestResultType.Stable_Failed;
-								PrintUtil.info("Stable failure!");
+								// PrintUtil.info("Stable failure!");
 							}
 						}
 					}
@@ -215,7 +236,7 @@ public class TestResult {
 		if (runCount >= Rerun.maxRerunTime) {
 			shouldStop = true;
 			resultType = TestResultType.UnStable_Failed;
-			PrintUtil.info("Unstable failure");
+			// PrintUtil.info("Unstable failure");
 		}
 
 		return shouldStop;

@@ -23,7 +23,8 @@ public class PrintUtil {
 	}
 
 	public static void countDown(String str, int count) {
-		System.out.println(str);
+		System.out.println();
+		System.out.print(str);
 		for (int i = count; i >= 0; i--) {
 			System.out.println("***********************  " + i
 					+ "   ***********************");

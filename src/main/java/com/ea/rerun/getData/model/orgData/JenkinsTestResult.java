@@ -31,9 +31,7 @@ public class JenkinsTestResult {
 		for (Map.Entry<String, List<JenkinsJob>> viewEntry : views.entrySet()) {
 			viewName = viewEntry.getKey();
 			jobList = viewEntry.getValue();
-			if (viewName != null && jobList != null && jobList.size() > 0
-					&& jobList.get(0) != null
-					&& !jobList.get(0).toString().equals("")) {
+			if (viewName != null && jobList != null && jobList.size() > 0) {
 				sb.append("****************************  " + viewName
 						+ " ****************************\n");
 				for (JenkinsJob job : jobList) {

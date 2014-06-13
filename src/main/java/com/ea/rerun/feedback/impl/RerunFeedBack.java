@@ -63,9 +63,9 @@ public class RerunFeedBack implements IFeedBack {
 			FileUtils.copyInputStreamToFile(this.getClass()
 					.getResourceAsStream("/resources/Result.html"), result);
 
-			File tempHtml = new File(classReportDirPath + "\\temp.html");
+			File tempHtml = new File(classReportDirPath + "\\welcome.html");
 			FileUtils.copyInputStreamToFile(this.getClass()
-					.getResourceAsStream("/resources/temp.html"), tempHtml);
+					.getResourceAsStream("/resources/welcome.html"), tempHtml);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,6 +81,10 @@ public class RerunFeedBack implements IFeedBack {
 				String viewName = viewEntry.getKey();
 				Map<String, RerunJobResult> jobResultMap = viewEntry.getValue();
 				ReportModel reportModel = new ReportModel();
+				System.out.println();
+				System.out.println("Info xxxxxxxxxxxxxxxxxxxxxxxx");
+				System.out
+						.println("Rerun Tool Folders (rerunLog and classReport) generated:");
 				// Map<String, String> fields = new LinkedHashMap<String,
 				// String>();
 				// fields.put("Title : ", viewName);
@@ -90,12 +94,26 @@ public class RerunFeedBack implements IFeedBack {
 				List<String> headers = getHeaders(false);
 				reportModel.setHeaders(headers);
 				List<List<ReportCell>> bodys = new ArrayList<List<ReportCell>>();
+
+				// those who rerun failed
 				for (Map.Entry<String, RerunJobResult> jobResultEntry : jobResultMap
 						.entrySet()) {
-					List<List<ReportCell>> jobTrs = getTr(
-							jobResultEntry.getValue(), false);
-					bodys.addAll(jobTrs);
+					if (!jobResultEntry.getKey().equals("Success")) {
+						List<List<ReportCell>> jobTrs = getTr(
+								jobResultEntry.getValue(), false);
+						bodys.addAll(jobTrs);
+					}
 				}
+				// those who rerun succeed
+				for (Map.Entry<String, RerunJobResult> jobResultEntry : jobResultMap
+						.entrySet()) {
+					if (jobResultEntry.getKey().equals("Success")) {
+						List<List<ReportCell>> jobTrs = getTr(
+								jobResultEntry.getValue(), false);
+						bodys.addAll(jobTrs);
+					}
+				}
+
 				reportModel.setBodys(bodys);
 				modelList.add(reportModel);
 			}
@@ -198,9 +216,25 @@ public class RerunFeedBack implements IFeedBack {
 					ReportCell caseTd = new ReportCell("", "",
 							testCase.getPack() + "." + testCase.getClassName()
 									+ "#" + testCase.getTestName());
+
+					String status = "Unknown";
+					switch (testCase.getResult().getResultType()) {
+					case Error:
+						status = "Error";
+						break;
+					case Successed:
+						status = "Success";
+						break;
+					case Skiped:
+						status = "Skiped";
+						break;
+					default:
+						status = "Failed";
+						break;
+					}
 					ReportCell statusTd = new ReportCell("",
-							"style=\"font-weight:bold\"", testCase.getResult()
-									.getResultType().toString());
+							"style=\"font-weight:bold\"", status);
+
 					ReportCell rerunTimesTd = new ReportCell("", "", testCase
 							.getResult().getRunCount() + "");
 					caseAndRerunTimesTr.add(caseTd);
@@ -241,8 +275,10 @@ public class RerunFeedBack implements IFeedBack {
 			e.printStackTrace();
 		}
 		if (needPrint) {
-			PrintUtil.info("Success to generate report :" + reportOutputPath);
+			String str = reportOutputPath.substring(
+					reportOutputPath.lastIndexOf("\\") + 1,
+					reportOutputPath.length());
+			System.out.println("classReport\\" + str);
 		}
 	}
-
 }

@@ -10,6 +10,8 @@ import java.util.Map;
 import com.ea.rerun.analyse.IAnalyse;
 import com.ea.rerun.analyse.impl.AnalyseJenkinsTestResult;
 import com.ea.rerun.analyse.model.MavenRerunTestCase;
+import com.ea.rerun.common.model.TestCase;
+import com.ea.rerun.common.model.TestResultType;
 import com.ea.rerun.common.util.PrintUtil;
 import com.ea.rerun.feedback.IFeedBack;
 import com.ea.rerun.feedback.impl.RerunFeedBack;
@@ -48,6 +50,8 @@ public class Rerun {
 							.error("the maxRerunTime should be ranged in [1,9]");
 				}
 				Rerun r = new Rerun();
+				System.out
+						.println("Executing Rerun Tool based on RerunConfig.xml");
 				JenkinsTestResult result = r.getJenkinsTestResult();
 				System.out.println(result.toString());
 				AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(
@@ -94,14 +98,22 @@ public class Rerun {
 		}
 	}
 
+	/**
+	 * format the rerun result, the successful cased should be collected to one
+	 * jobResult
+	 * 
+	 * @author Jackey
+	 * @date Jun 13, 2014
+	 * @param list
+	 * @return
+	 */
 	private Map<String, Map<String, RerunJobResult>> formatFinalResult(
 			List<MavenRerunTestCase> list) {
+		// key is the view name, value is Map<jobname, jobresult>
 		Map<String, Map<String, RerunJobResult>> finalResult = new LinkedHashMap<String, Map<String, RerunJobResult>>();
 		// Map<String, List<TestCase>> map = new HashMap<String,
 		// List<TestCase>>();
 		for (MavenRerunTestCase cmd : list) {
-			// System.out.println(cmd.getTestCase().toString());
-			// System.out.println(cmd.getTestCase().getMavenCommand());
 
 			if (finalResult.containsKey(cmd.getViewName())) {
 				Map<String, RerunJobResult> map = finalResult.get(cmd
@@ -109,32 +121,72 @@ public class Rerun {
 				if (map == null) {
 					map = new LinkedHashMap<String, RerunJobResult>();
 				}
-				if (map.containsKey(cmd.getJobName())) {
-					RerunJobResult jobResult = map.get(cmd.getJobName());
-					if (jobResult == null) {
-						jobResult = new RerunJobResult(cmd.getViewName(),
-								cmd.getJobName());
+				//check if the case is success
+				if (!checkCaseSuccess(cmd.getTestCase())) {
+					if (map.containsKey(cmd.getJobName())) {
+						RerunJobResult jobResult = map.get(cmd.getJobName());
+						if (jobResult == null) {
+							jobResult = new RerunJobResult(cmd.getViewName(),
+									cmd.getJobName());
 
+						}
+						jobResult.addTestCase(cmd.getTestCase());
+
+					} else {
+						RerunJobResult jobResult = new RerunJobResult(
+								cmd.getViewName(), cmd.getJobName());
+						jobResult.addTestCase(cmd.getTestCase());
+						map.put(cmd.getJobName(), jobResult);
 					}
-					jobResult.addTestCase(cmd.getTestCase());
-
 				} else {
-					RerunJobResult jobResult = new RerunJobResult(
-							cmd.getViewName(), cmd.getJobName());
-					jobResult.addTestCase(cmd.getTestCase());
-					map.put(cmd.getJobName(), jobResult);
+					if (map.containsKey("Success")) {
+						RerunJobResult jobResult = map.get("Success");
+						if (jobResult == null) {
+							jobResult = new RerunJobResult("Success", "Success");
+						}
+						jobResult.addTestCase(cmd.getTestCase());
+
+					} else {
+						RerunJobResult jobResult = new RerunJobResult(
+								"Success", "Success");
+						jobResult.addTestCase(cmd.getTestCase());
+						map.put("Success", jobResult);
+					}
 				}
 			} else {
 				Map<String, RerunJobResult> map = new LinkedHashMap<String, RerunJobResult>();
-				RerunJobResult jobResult = new RerunJobResult(
-						cmd.getViewName(), cmd.getJobName());
-				jobResult.addTestCase(cmd.getTestCase());
-				map.put(cmd.getJobName(), jobResult);
+				RerunJobResult jobResult;
+				if (!checkCaseSuccess(cmd.getTestCase())) {
+					jobResult = new RerunJobResult(cmd.getViewName(),
+							cmd.getJobName());
+					jobResult.addTestCase(cmd.getTestCase());
+					map.put(cmd.getJobName(), jobResult);
+				} else {
+					jobResult = new RerunJobResult("Success", "Success");
+					jobResult.addTestCase(cmd.getTestCase());
+					map.put("Success", jobResult);
+				}
 				finalResult.put(cmd.getViewName(), map);
 			}
 		}
 
 		return finalResult;
+	}
+
+	private boolean checkCaseSuccess(TestCase testCase) {
+		if (testCase != null) {
+			if (testCase.getResult() != null) {
+				if (testCase.getResult().getResultType() != null) {
+					switch (testCase.getResult().getResultType()) {
+					case Successed:
+						return true;
+					default:
+						return false;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public IGetData getGetRerunData() {

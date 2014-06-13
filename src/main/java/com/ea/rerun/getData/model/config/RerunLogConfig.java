@@ -30,7 +30,7 @@ public class RerunLogConfig extends XMLAnalyser {
 	private KeepLogEnum generateKeepLogEnum() {
 		String result = getNodeString("/rerunConfig/log/keepLog");
 		if (isNullOrEmpty(result)) {
-			warning("keepLog not set, use default: " + KeepLogEnum.KeepFailure);
+			//warning("keepLog not set, use default: " + KeepLogEnum.KeepFailure);
 			return KeepLogEnum.KeepFailure;
 		}
 		return KeepLogEnum.valueOf(result);
@@ -39,7 +39,7 @@ public class RerunLogConfig extends XMLAnalyser {
 	private int generateDaysToKeep() {
 		String result = getNodeString("/rerunConfig/log/daysToKeepLog");
 		if (isNullOrEmpty(result)) {
-			warning("daysToKeepLog not set, use default : 50 days");
+			//warning("daysToKeepLog not set, use default : 50 days");
 			return 50;
 		}
 		return Integer.parseInt(result.trim());
@@ -49,7 +49,7 @@ public class RerunLogConfig extends XMLAnalyser {
 		String result = getNodeString("/rerunConfig/log/logPath");
 		if (isNullOrEmpty(result)) {
 			result = RerunConfig.currentPath + "\\rerunLog";
-			warning("logPath not set, use default :  " + result);
+			//warning("logPath not set, use default :  " + result);
 		}
 		return result;
 	}

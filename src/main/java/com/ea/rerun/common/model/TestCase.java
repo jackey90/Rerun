@@ -65,8 +65,7 @@ public class TestCase implements Test {
 	}
 
 	public String toString() {
-		return branch + ":" + bundle + ":" + pack + "." + className + "."
-				+ testName;
+		return branch + "-" + pack + "." + className + "." + testName;
 	}
 
 	public String getGoals() {
@@ -128,6 +127,5 @@ public class TestCase implements Test {
 	public void run(TestResult result) {
 		result.run(this);
 	}
-	
 
 }

@@ -8,10 +8,7 @@
 				<name>BVT</name>
 			</listView>-->
 			<listView>
-				<name>BVT</name>
-				<jobNames>
-					<string>commerce-BVT</string>
-				</jobNames>
+				<name>Comprehensive</name>
 			</listView>
 		</views>
 	</jenkins>
