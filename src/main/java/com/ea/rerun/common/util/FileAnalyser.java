@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 28, 2014
  * 
  *       read or write operation to a file

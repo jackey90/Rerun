@@ -1,7 +1,7 @@
 package com.ea.rerun.getData;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 7, 2014
  * 
  *       get the origin data

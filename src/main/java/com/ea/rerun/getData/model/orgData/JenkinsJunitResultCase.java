@@ -1,7 +1,7 @@
 package com.ea.rerun.getData.model.orgData;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 12, 2014
  * 
  * 		

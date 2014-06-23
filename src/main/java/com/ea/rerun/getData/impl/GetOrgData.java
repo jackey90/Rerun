@@ -25,7 +25,7 @@ import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
 import com.ibm.icu.math.BigDecimal;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 8, 2014
  * 
  *       get JenkinsTestResult according to the RerunConfig
@@ -62,39 +62,58 @@ public class GetOrgData implements IGetData {
 		Map<String, List<String>> rerunViews = rerunConfig.getJenkinsConfig()
 				.getViews();
 		Map<String, List<String>> jenKinsViews = jenkinsConfig.getViews();
-		if (jenKinsViews.isEmpty()) {
+		if (jenKinsViews == null || jenKinsViews.isEmpty()) {
 			PrintUtil.error("The jenkins views is empty!");
 			return null;
 		} else {
-			for (Map.Entry<String, List<String>> rerunViewEntry : rerunViews
-					.entrySet()) {
-
-				if (jenKinsViews.containsKey(rerunViewEntry.getKey())) {
-					List<String> rerunNames = rerunViewEntry.getValue();
-					List<String> jenKinsNames = jenKinsViews.get(rerunViewEntry
-							.getKey());
-					// Rerun Jobs
-					List<String> names = new ArrayList<String>();
-					if (rerunNames == null) {
-						names.addAll(jenKinsNames);
-					} else {
-						for (String rerunName : rerunNames) {
-							if (jenKinsNames.contains(rerunName)) {
-								names.add(rerunName);
-							}
-						}
-					}
-
-					if (!names.isEmpty()) {
+			if (rerunViews == null || rerunViews.isEmpty()) {
+				for (Map.Entry<String, List<String>> jenkinsViewEntry : jenKinsViews
+						.entrySet()) {
+					String viewName = jenkinsViewEntry.getKey();
+					List<String> jobNameList = jenkinsViewEntry.getValue();
+					if (viewName != null && jobNameList != null
+							&& jobNameList.size() > 0) {
 						List<JenkinsJob> jobList = new ArrayList<JenkinsJob>();
-						for (String name : names) {
+						for (String name : jobNameList) {
 							JenkinsJob job = getFailedJenkinsJob(name);
 							if (job != null) {
 								jobList.add(job);
 							}
 						}
+						map.put(viewName, jobList);
+					}
+				}
+			} else {
+				for (Map.Entry<String, List<String>> rerunViewEntry : rerunViews
+						.entrySet()) {
 
-						map.put(rerunViewEntry.getKey(), jobList);
+					if (jenKinsViews.containsKey(rerunViewEntry.getKey())) {
+						List<String> rerunNames = rerunViewEntry.getValue();
+						List<String> jenKinsNames = jenKinsViews
+								.get(rerunViewEntry.getKey());
+						// Rerun Jobs
+						List<String> names = new ArrayList<String>();
+						if (rerunNames == null) {
+							names.addAll(jenKinsNames);
+						} else {
+							for (String rerunName : rerunNames) {
+								if (jenKinsNames.contains(rerunName)) {
+									names.add(rerunName);
+								}
+							}
+						}
+
+						if (!names.isEmpty()) {
+							List<JenkinsJob> jobList = new ArrayList<JenkinsJob>();
+							for (String name : names) {
+								JenkinsJob job = getFailedJenkinsJob(name);
+								if (job != null) {
+									jobList.add(job);
+								}
+							}
+
+							map.put(rerunViewEntry.getKey(), jobList);
+						}
 					}
 				}
 			}

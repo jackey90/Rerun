@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 8, 2014
  * 
  *       the jenkins test result, stored under jenkins' builds folder, eg:

@@ -6,6 +6,11 @@
 		<views>
 			<listView>
 				<name>BVT</name>
+				<jobNames>
+					<string>catalog-BVT</string>
+					<string>preferences-BVT</string>
+					<string>rating-BVT</string>
+				</jobNames>
 			</listView>
 			<listView>
 				<name>Comprehensive</name>
@@ -15,8 +20,6 @@
 	</jenkins>
 
 	<report>
-		<!-- optional: default template is in the Rerun.jar -->
-		<ReportTemplatePath></ReportTemplatePath>
 		<!-- optional: default is currentPath+"\\" -->
 		<ReportOutPutPath></ReportOutPutPath>
 	</report>
@@ -26,6 +29,7 @@
 		<keepLog></keepLog>
 		<!-- optional: default is 50 -->
 		<daysToKeep></daysToKeep>
+		<!-- optional: default is currentPath\\rerunLog -->
 		<logPath></logPath>
 	</log>
 

@@ -11,7 +11,7 @@ import org.dom4j.io.SAXReader;
 import com.ea.rerun.common.util.PrintUtil;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 7, 2014
  * 
  *       translated from the rerunConfig.xml

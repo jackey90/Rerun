@@ -4,7 +4,7 @@ import com.ea.rerun.common.model.TestCase;
 import com.ibm.icu.math.BigDecimal;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 8, 2014
  * 
  *       maven's junit result, the files are stored under the surefire-reports

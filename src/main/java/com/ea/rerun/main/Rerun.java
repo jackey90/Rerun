@@ -52,6 +52,7 @@ public class Rerun {
 				Rerun r = new Rerun();
 				System.out
 						.println("Executing Rerun Tool based on RerunConfig.xml");
+				System.out.println();
 				JenkinsTestResult result = r.getJenkinsTestResult();
 				System.out.println(result.toString());
 				AnalyseJenkinsTestResult an = new AnalyseJenkinsTestResult(
@@ -80,6 +81,8 @@ public class Rerun {
 
 				rerunFeedBack = new RerunFeedBack(r.formatFinalResult(list));
 				rerunFeedBack.feedBack();
+				System.out.println();
+				System.out.println("Please see the result on \"Result.html\"");
 			} else {
 				PrintUtil
 						.error("The input param must be a integer! \neg: java -jar Rerun.jar 4");

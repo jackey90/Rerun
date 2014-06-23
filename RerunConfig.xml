@@ -1,32 +1,32 @@
 <rerunConfig>
 	<jenkins>
-		<!-- must must-->
 		<jenkinsFolder>C:\Program Files (x86)\Jenkins</jenkinsFolder>
-		<!-- optional: default is all view-->
+		<!-- choose the view you want to rerun -->
+		<!--
 		<views>
-			<!--<listView>
+			<listView>
 				<name>BVT</name>
-			</listView>-->
+			</listView>
 			<listView>
 				<name>Comprehensive</name>
 			</listView>
 		</views>
+		  -->
 	</jenkins>
-	
+
 	<report>
-		<!-- optional: default template is in the Rerun.jar-->
+		<!-- optional: default template is in the Rerun.jar -->
 		<ReportTemplatePath></ReportTemplatePath>
+		<!-- optional: default is currentPath+"\\" -->
+		<ReportOutPutPath></ReportOutPutPath>
 	</report>
 
 	<log>
-		<!-- optional: default is KeepFailure     (KeepAll,KeepNone,KeepSuccess,KeepFailure)-->
+		<!-- KeepAll,KeepNone,KeepSuccess,KeepFailure -->
 		<keepLog></keepLog>
-		<!-- optional: default is 50-->
-		<daysToKeep>50</daysToKeep>
-		<!-- optional: default is  currentPah+"\\rerunLog"-->
+		<!-- optional: default is 50 -->
+		<daysToKeep></daysToKeep>
 		<logPath></logPath>
 	</log>
-
-
 
 </rerunConfig>

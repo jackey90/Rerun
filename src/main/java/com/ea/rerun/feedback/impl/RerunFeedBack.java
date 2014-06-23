@@ -19,7 +19,7 @@ import com.ea.rerun.feedback.model.RerunJobResult;
 import com.ea.rerun.getData.model.config.RerunConfig;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 8, 2014
  * 
  *       give the feedback: generate the result.html
@@ -82,9 +82,8 @@ public class RerunFeedBack implements IFeedBack {
 				Map<String, RerunJobResult> jobResultMap = viewEntry.getValue();
 				ReportModel reportModel = new ReportModel();
 				System.out.println();
-				System.out.println("Info xxxxxxxxxxxxxxxxxxxxxxxx");
 				System.out
-						.println("Rerun Tool Folders (rerunLog and classReport) generated:");
+						.println("Folder rerunLog and following files generated:");
 				// Map<String, String> fields = new LinkedHashMap<String,
 				// String>();
 				// fields.put("Title : ", viewName);

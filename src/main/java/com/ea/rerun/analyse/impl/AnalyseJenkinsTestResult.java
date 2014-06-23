@@ -15,7 +15,7 @@ import com.ea.rerun.getData.model.orgData.JenkinsModule;
 import com.ea.rerun.getData.model.orgData.JenkinsTestResult;
 
 /**
- * @author Jackey jaceky90.hj@gmail.com
+ * @author Jackey
  * @Date May 8, 2014
  * 
  *       analyse the jenkins test result, and generate the maven commands to
@@ -48,41 +48,78 @@ public class AnalyseJenkinsTestResult implements IAnalyse {
 								JenkinsJunitResult testResult = module
 										.getLastBuildResult();
 								if (testResult != null) {
-									for (JenkinsJunitResultSuite jenkinsSuite : testResult
-											.getSuites()) {
-										if (jenkinsSuite != null) {
-											for (JenkinsJunitResultCase jenkinsCase : jenkinsSuite
-													.getCases()) {
-												MavenRerunTestCase command = new MavenRerunTestCase();
-												command.setViewName(viewName);
-												command.setJobName(jobName);
-												TestCase testCase = new TestCase();
-												if (pomPath != null) {
-													String[] pathArray = pomPath
-															.split("\\\\");
-													if (pathArray.length >= 3) {
-														if (!pathArray[pathArray.length - 3]
-																.contains("nexus")) {
-															testCase.setBranch(pathArray[pathArray.length - 3]);
-															testCase.setBundle(pathArray[pathArray.length - 2]);
-														} else {
-															testCase.setBranch(pathArray[pathArray.length - 4]);
-															testCase.setBundle(pathArray[pathArray.length - 3]
-																	+ "\\"
-																	+ pathArray[pathArray.length - 2]);
+									if (testResult.getSuites() != null) {
+										for (JenkinsJunitResultSuite jenkinsSuite : testResult
+												.getSuites()) {
+											if (jenkinsSuite != null) {
+												for (JenkinsJunitResultCase jenkinsCase : jenkinsSuite
+														.getCases()) {
+													MavenRerunTestCase command = new MavenRerunTestCase();
+													command.setViewName(viewName);
+													command.setJobName(jobName);
+													TestCase testCase = new TestCase();
+													if (pomPath != null) {
+														String[] pathArray = pomPath
+																.split("\\\\");
+														// if (pathArray.length
+														// >= 3) {
+														// if
+														// (!pathArray[pathArray.length
+														// - 3]
+														// .contains("nexus")) {
+														// testCase.setBranch(pathArray[pathArray.length
+														// - 3]);
+														// testCase.setBundle(pathArray[pathArray.length
+														// - 2]);
+														// } else {
+														// testCase.setBranch(pathArray[pathArray.length
+														// - 4]);
+														// testCase.setBundle(pathArray[pathArray.length
+														// - 3]
+														// + "\\"
+														// +
+														// pathArray[pathArray.length
+														// - 2]);
+														// }
+														// }
+														for (int i = 0; i < pathArray.length; i++) {
+															String tempPath = pathArray[i]
+																	.toUpperCase();
+															// TODO hard code
+															// here
+															if (tempPath
+																	.contains("MAIN")
+																	|| tempPath
+																			.contains("REL")
+																	|| tempPath
+																			.contains("NNG")) {
+																testCase.setBranch(tempPath);
+																if (pathArray[i + 1]
+																		.toUpperCase()
+																		.contains(
+																				"NEXUS")) {
+																	testCase.setBundle(pathArray[i + 1]
+																			+ "\\"
+																			+ pathArray[i + 2]);
+																} else {
+																	testCase.setBundle(pathArray[i + 1]);
+																}
+																break;
+															}
 														}
+
 													}
+													testCase.setPack(jenkinsCase
+															.getPackageName());
+													testCase.setClassName(jenkinsCase
+															.getClassName());
+													testCase.setTestName(jenkinsCase
+															.getTestName());
+													testCase.setPomPath(pomPath);
+													testCase.setGoals(goals);
+													command.setTestCase(testCase);
+													list.add(command);
 												}
-												testCase.setPack(jenkinsCase
-														.getPackageName());
-												testCase.setClassName(jenkinsCase
-														.getClassName());
-												testCase.setTestName(jenkinsCase
-														.getTestName());
-												testCase.setPomPath(pomPath);
-												testCase.setGoals(goals);
-												command.setTestCase(testCase);
-												list.add(command);
 											}
 										}
 									}

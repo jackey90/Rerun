@@ -11,7 +11,7 @@ public class MavenUtil {
 	public static void run(String command) {
 		// Properties props=System.getProperties();
 		// String osName = props.getProperty("os.name");
-		// String osArch = props.getProperty("os.arch");
+		// String osArch = props.getProperty("os.arch");  
 		// String osVersion = props.getProperty("os.version");
 		// System.out.println(osName);
 		// System.out.println(osArch);
